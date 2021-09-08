@@ -2,8 +2,22 @@ from django.db import models
 
 
 {% for model in models %}
-class {{model.name}}:  
+class {{model.name}}(models.Model):  
 {% for field in model.fields %}
-    {{ field.name }} = models.{{ field.column_type }}
+    {{ field.name }} = models.{{ field.type }}(
+        {% for k, v in field.extras.items() %}
+            {% if k == 'default' %}
+                {% if loop.last %}
+                default={{ v|tojson }}
+                {% else %}
+                default={{ v|tojson }},
+                {% endif %}
+            {% elif loop.last %}
+                {{ k }}={{ v }}
+            {% else %}
+                {{ k }}={{ v }},
+            {% endif %}
+        {% endfor %}
+        )
 {% endfor %}
 {% endfor %}

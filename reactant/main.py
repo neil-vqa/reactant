@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel
+from pydantic.fields import Undefined, FieldInfo, UndefinedType
 from jinja2 import Environment, PackageLoader
 from yapf.yapflib.yapf_api import FormatCode
 
@@ -28,6 +29,53 @@ class AlchemyORM:
 class PeeweeORM:
     def __str__():
         return "peewee"
+
+
+class ReactantColumn:
+    def __init__(
+        self, name: str, column_type: str, options: List[Dict[str, Any]]
+    ) -> None:
+        self.name = name
+        self.column_type = column_type
+        self.options = options
+
+
+class ReactantFieldInfo(FieldInfo):
+    def __init__(self, default: Any, **kwargs: Any) -> None:
+        self.primary_key = kwargs.pop("primary_key", False)
+        self.unique = kwargs.pop("unique", False)
+        self.nullable = kwargs.pop("nullable", False)
+        self.blank = kwargs.pop("blank", False)
+        self.min_length = kwargs.pop("min_length", None)
+        self.max_length = kwargs.pop("max_length", None)
+        self.max_digits = kwargs.pop("max_digits", None)
+        self.decimal_places = kwargs.pop("decimal_places", None)
+        super().__init__(default=default, **kwargs)
+
+
+def Field(
+    default: Any = Undefined,
+    primary_key=None,
+    unique=None,
+    nullable=None,
+    blank=None,
+    min_length=None,
+    max_length=None,
+    max_digits=None,
+    decimal_places=None,
+) -> Any:
+    field_info = ReactantFieldInfo(
+        default=default,
+        primary_key=primary_key,
+        unique=unique,
+        nullable=nullable,
+        blank=blank,
+        min_length=min_length,
+        max_length=max_length,
+        max_digits=max_digits,
+        decimal_places=decimal_places,
+    )
+    return field_info
 
 
 def generate():

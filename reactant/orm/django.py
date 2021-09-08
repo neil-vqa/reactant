@@ -1,12 +1,12 @@
 import ipaddress
 import uuid
-from reactant.main import DjangoORM, Reactant
-from pydantic.fields import ModelField
+from reactant.main import DjangoORM, Reactant, ReactantColumn, ReactantFieldInfo
+from pydantic.fields import ModelField, Undefined, UndefinedType, FieldInfo
 from datetime import date, datetime, time, timedelta
 from enum import Enum
 from decimal import Decimal
 from pathlib import Path
-from typing import NamedTuple, List
+from typing import Any, Dict, NamedTuple, List, Optional
 from django.db.models import (
     BinaryField,
     BooleanField,
@@ -33,10 +33,26 @@ def generate_django_orm_models(dj_subclass: DjangoORM) -> NamedTuple:
 
 def get_columns(dj_subclass: Reactant) -> List:
     column_list = []
-    for key, value in dj_subclass.__fields__.items():
+    for name, value in dj_subclass.__fields__.items():
         column_type = map_type_to_orm_field(value)
-        column_info = {"name": key, "column_type": column_type.__name__}
+        extras = {}
+
+        class FieldOptions(NamedTuple):
+            name: str
+            type: str
+            extras: Dict[Any, Any]
+
+        if not issubclass(type(value.field_info.default), UndefinedType):
+            extras["default"] = value.field_info.default
+        if value.field_info.max_length:
+            extras["max_length"] = value.field_info.max_length
+        if value.field_info.extra:
+            for k, v in value.field_info.extra.items():
+                extras[k] = v
+
+        column_info = FieldOptions(name, column_type.__name__, extras)
         column_list.append(column_info)
+
     return column_list
 
 
