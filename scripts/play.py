@@ -1,25 +1,19 @@
-from reactant import Reactant, create_all
+from typing import Optional
+from reactant import Reactant, DjangoORM, generate
 
 
-class Airplane(Reactant):
+class Airplane(Reactant, DjangoORM):
     id: int
     name: str
-    airline: str
+    company: str = "Lockheed"
+    operator: Optional[str]
 
 
-class Ship(Reactant):
+class Ship(Reactant, DjangoORM):
     id: int
     name: str
-    company: str
-
-
-# user1 = User(id=123, username="jihyo")
-
-# print(type(user1))
-# print(user1.__annotations__)
-# print(user1.__dict__)
-# print(user1.annotations())
+    company: str = "Cockaliong"
 
 
 if __name__ == "__main__":
-    create_all()
+    generate()

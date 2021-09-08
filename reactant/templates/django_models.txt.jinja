@@ -1,0 +1,9 @@
+from django.db import models
+
+
+{% for model in models %}
+class {{model.name}}:  
+{% for field in model.fields %}
+    {{ field.name }} = models.{{ field.column_type }}
+{% endfor %}
+{% endfor %}
