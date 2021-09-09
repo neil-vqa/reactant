@@ -6,7 +6,7 @@ class Airplane(Reactant, DjangoORM):
     id: int = Field(primary_key=True)
     name: str = Field(max_length=64)
     company: str = "Lockheed"
-    operator: Optional[str]
+    operator: Optional[str] = Field(nullable=True, blank=True)
 
 
 class Spaceship(Reactant, DjangoORM):
