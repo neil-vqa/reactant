@@ -6,16 +6,10 @@ class {{model.name}}(models.Model):
 {% for field in model.fields %}
     {{ field.name }} = models.{{ field.type }}(
         {% for k, v in field.extras.items() %}
-            {% if k == 'default' %}
-                {% if loop.last %}
-                default={{ v|tojson }}
-                {% else %}
-                default={{ v|tojson }},
-                {% endif %}
-            {% elif loop.last %}
-                {{ k }}={{ v }}
+            {% if loop.last %}
+                {{ k }}={% if v is string %}{{ v|tojson }}{% else %}{{ v }}{% endif %}
             {% else %}
-                {{ k }}={{ v }},
+                {{ k }}={% if v is string %}{{ v|tojson }},{% else %}{{ v }},{% endif %}
             {% endif %}
         {% endfor %}
         )

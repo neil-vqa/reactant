@@ -44,14 +44,17 @@ def get_columns(dj_subclass: Reactant) -> List:
 
         if not issubclass(type(value.field_info.default), UndefinedType):
             extras["default"] = value.field_info.default
-        if value.field_info.max_length:
-            extras["max_length"] = value.field_info.max_length
         if value.field_info.extra:
             for k, v in value.field_info.extra.items():
                 extras[k] = v
+        if value.field_info.max_length:
+            extras["max_length"] = value.field_info.max_length
+        if value.field_info.title:
+            extras["verbose_name"] = value.field_info.title
 
         column_info = FieldOptions(name, column_type.__name__, extras)
         column_list.append(column_info)
+        # print(value.field_info)
 
     return column_list
 

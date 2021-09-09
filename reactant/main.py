@@ -21,7 +21,7 @@ class DjangoORM:
         return "django"
 
 
-class AlchemyORM:
+class SQLAlchemyORM:
     def __str__():
         return "sqlalchemy"
 
@@ -80,14 +80,16 @@ def Field(
 
 def generate():
     """
-    get Reactant subclass,
+    get Reactant subclasses,
     identify ORM,
-    map Reactant subclass attributes to ORM model types,
-    create ORM model,
-    build template
+    map Reactant/ORM subclass attributes to ORM model field types,
+    render from template
     """
+    # Need to store the generated models before rendering to avoid rewrites
+    # that cause the "import"'s being always re-rendered and duplicated.
     dj_models = []
 
+    # Generate models with proper field types according to ORM
     for cls in Reactant.__subclasses__():
         if issubclass(cls, DjangoORM):
             from reactant.orm import generate_django_orm_models
@@ -95,15 +97,21 @@ def generate():
             model = generate_django_orm_models(cls)
             dj_models.append(model)
 
-        elif issubclass(cls, AlchemyORM):
+        if issubclass(cls, SQLAlchemyORM):
             pass
 
-        elif issubclass(cls, PeeweeORM):
+        if issubclass(cls, PeeweeORM):
             pass
 
+    # Checks and renders
     if dj_models:
-        template = env.get_template("django_models.txt.jinja")
-        output = template.render(models=dj_models)
-        formatted_code, _ = FormatCode(output)
-        with open("models.py", "w") as f:
-            f.write(formatted_code)
+        render_django(dj_models)
+        # pass
+
+
+def render_django(models: List[Any]):
+    template = env.get_template("django_models.txt.jinja")
+    output = template.render(models=models)
+    formatted_code, _ = FormatCode(output)
+    with open("models.py", "w") as f:
+        f.write(formatted_code)

@@ -3,10 +3,10 @@ from reactant import Reactant, DjangoORM, generate, Field
 
 
 class Airplane(Reactant, DjangoORM):
-    id: int = Field(primary_key=True)
+    id: int = Field(primary_key=True, title="plane_id")
     name: str = Field(max_length=64)
     company: str = "Lockheed"
-    operator: Optional[str] = Field(nullable=True, blank=True)
+    operator: Optional[str] = Field("USA", nullable=True, blank=True)
 
 
 class Spaceship(Reactant, DjangoORM):
