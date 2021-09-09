@@ -1,6 +1,6 @@
 import ipaddress
 import uuid
-from reactant.main import DjangoORM, Reactant, ReactantColumn, ReactantFieldInfo
+from reactant.main import DjangoORM, Reactant
 from pydantic.fields import ModelField, Undefined, UndefinedType, FieldInfo
 from datetime import date, datetime, time, timedelta
 from enum import Enum

@@ -1,0 +1,18 @@
+from rest_framework import serializers
+from .models import {% for name in names %}{% if loop.last %}{{ name }}{% else %}{{ name }},{% endif %}{% endfor %}
+
+{% for model in models %}
+class {{ model.name }}Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = {{ model.name }}
+        fields = [
+            {% for field in model.fields %}
+                {% if loop.last %}
+                {{ field.name|tojson }}
+                {% else %}
+                {{ field.name|tojson }},
+                {% endif %}
+            {% endfor %}
+        ]
+
+{% endfor %}

@@ -6,11 +6,13 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 
 ## Roadmap
 
-**Django** (in its *default* project structure)
+**Django REST** (in Django's *default* project structure i.e. by *apps*)
 
-- [ ] models.py
-- [ ] views.py
-- [ ] urls.py
+- [X] models
+- [X] views (class-based API views, filename=views_class.py)
+- [ ] views (function-based API views, filename=views_function.py)
+- [X] serializers
+- [ ] urls
 
 **SQLAlchemy**
 

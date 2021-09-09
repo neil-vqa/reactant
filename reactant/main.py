@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, NamedTuple, Optional, Union
 from pydantic import BaseModel
 from pydantic.fields import Undefined, FieldInfo, UndefinedType
 from jinja2 import Environment, PackageLoader
@@ -31,53 +31,6 @@ class PeeweeORM:
         return "peewee"
 
 
-class ReactantColumn:
-    def __init__(
-        self, name: str, column_type: str, options: List[Dict[str, Any]]
-    ) -> None:
-        self.name = name
-        self.column_type = column_type
-        self.options = options
-
-
-class ReactantFieldInfo(FieldInfo):
-    def __init__(self, default: Any, **kwargs: Any) -> None:
-        self.primary_key = kwargs.pop("primary_key", False)
-        self.unique = kwargs.pop("unique", False)
-        self.nullable = kwargs.pop("nullable", False)
-        self.blank = kwargs.pop("blank", False)
-        self.min_length = kwargs.pop("min_length", None)
-        self.max_length = kwargs.pop("max_length", None)
-        self.max_digits = kwargs.pop("max_digits", None)
-        self.decimal_places = kwargs.pop("decimal_places", None)
-        super().__init__(default=default, **kwargs)
-
-
-def Field(
-    default: Any = Undefined,
-    primary_key=None,
-    unique=None,
-    nullable=None,
-    blank=None,
-    min_length=None,
-    max_length=None,
-    max_digits=None,
-    decimal_places=None,
-) -> Any:
-    field_info = ReactantFieldInfo(
-        default=default,
-        primary_key=primary_key,
-        unique=unique,
-        nullable=nullable,
-        blank=blank,
-        min_length=min_length,
-        max_length=max_length,
-        max_digits=max_digits,
-        decimal_places=decimal_places,
-    )
-    return field_info
-
-
 def generate():
     """
     get Reactant subclasses,
@@ -106,12 +59,31 @@ def generate():
     # Checks and renders
     if dj_models:
         render_django(dj_models)
-        # pass
 
 
-def render_django(models: List[Any]):
-    template = env.get_template("django_models.txt.jinja")
-    output = template.render(models=models)
-    formatted_code, _ = FormatCode(output)
-    with open("models.py", "w") as f:
-        f.write(formatted_code)
+def render_django(models: List[NamedTuple]):
+    model_names = [model.name for model in models]
+
+    # render models.py
+    template_models = env.get_template("django_models.txt.jinja")
+    output_models = template_models.render(models=models)
+    formatted_code, _ = FormatCode(output_models)
+    with open("models.py", "w") as file1:
+        file1.write(formatted_code)
+        print("Django models.py finish rendering.")
+
+    # render class-based API views.py
+    template_views = env.get_template("django_views.txt.jinja")
+    output_views = template_views.render(names=model_names)
+    formatted_code, _ = FormatCode(output_views)
+    with open("views_class.py", "w") as file2:
+        file2.write(formatted_code)
+        print("Django views_class.py finish rendering.")
+
+    # render serializers.py
+    template_serializers = env.get_template("django_serializers.txt.jinja")
+    output_serializers = template_serializers.render(models=models, names=model_names)
+    formatted_code, _ = FormatCode(output_serializers)
+    with open("serializers.py", "w") as file3:
+        file3.write(formatted_code)
+        print("Django serializers.py finish rendering.")

@@ -139,3 +139,7 @@ cython_debug/
 
 # reactant by-products
 models.py
+views.py
+views_class.py
+views_function.py
+serializers.py
