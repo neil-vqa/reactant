@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from pydantic.fields import Undefined, FieldInfo, UndefinedType
 from jinja2 import Environment, PackageLoader
 from yapf.yapflib.yapf_api import FormatCode
+from .utils import convert_to_snake
 
 
 env = Environment(
@@ -87,3 +88,13 @@ def render_django(models: List[NamedTuple]):
     with open("serializers.py", "w") as file3:
         file3.write(formatted_code)
         print("Django serializers.py finish rendering.")
+
+    # render class-based urls.py
+    snaked_model_names = [convert_to_snake(name) for name in model_names]
+    paired_names = dict(zip(model_names, snaked_model_names))
+    template_urls = env.get_template("django_urls.txt.jinja")
+    output_urls = template_urls.render(names=paired_names)
+    formatted_code, _ = FormatCode(output_urls)
+    with open("urls_class.py", "w") as file3:
+        file3.write(formatted_code)
+        print("Django urls_class.py finish rendering.")

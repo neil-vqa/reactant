@@ -1,7 +1,9 @@
 from django.urls import path
-from . import views
+from .views import {% for k,_ in names.items() %}{% if loop.last %}{{ k }}List, {{ k }}Detail{% else %}{{ k }}List, {{ k }}Detail,{% endif %}{% endfor %}
 
 urlpatterns = [
-    {% for url in urls %}
+    {% for k,v in names.items() %}
+    path("/{{ v }}", {{ k }}List.as_view(), name="{{ v }}s"),
+    path("/{{ v }}/<int:pk>", {{ k }}Detail.as_view(), name="{{ v }}"),
     {% endfor %}
 ]

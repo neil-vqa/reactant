@@ -143,3 +143,5 @@ views.py
 views_class.py
 views_function.py
 serializers.py
+urls_class.py
+urls_function.py
