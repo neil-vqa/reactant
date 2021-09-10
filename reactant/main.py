@@ -1,3 +1,4 @@
+from reactant.orm.django import DjangoModel
 from reactant.orm import DjangoORM
 from typing import Any, Dict, List, NamedTuple, Optional, Union
 from pydantic import BaseModel
@@ -18,8 +19,66 @@ class Reactant(BaseModel):
         super().__init__(**data)
 
 
-class Combustion:
-    pass
+class DjangoCombustionChamber:
+    def __init__(self, reactants: List[DjangoORM]) -> None:
+        self.reactants = reactants
+
+    def _get_models(self) -> List[DjangoModel]:
+        models = []
+        for cls in self.reactants:
+            try:
+                model = cls.generate_django_orm_model(cls)
+                models.append(model)
+            except Exception:
+                raise
+        return models
+
+    def render_manager(self) -> None:
+        models = self._get_models()
+        model_names = [model.name for model in models]
+
+        self._render_models(models)
+        self._render_views(model_names)
+        self._render_serializers(models, model_names)
+        self._render_urls(model_names)
+
+    def _render_models(self, models: List[NamedTuple]) -> None:
+        template_models = env.get_template("django_models.txt.jinja")
+        output_models = template_models.render(models=models)
+        formatted_code = format_str(output_models, mode=FileMode())
+        with open("models.py", "w") as file1:
+            file1.write(formatted_code)
+            secho("Django models.py finished rendering.", fg="green")
+
+    def _render_views(self, model_names: List[str]) -> None:
+        template_views = env.get_template("django_views.txt.jinja")
+        output_views = template_views.render(names=model_names)
+        formatted_code = format_str(output_views, mode=FileMode())
+        with open("views_class.py", "w") as file2:
+            file2.write(formatted_code)
+            secho("Django views_class.py finished rendering.", fg="green")
+
+    def _render_serializers(
+        self, models: List[NamedTuple], model_names: List[str]
+    ) -> None:
+        template_serializers = env.get_template("django_serializers.txt.jinja")
+        output_serializers = template_serializers.render(
+            models=models, names=model_names
+        )
+        formatted_code = format_str(output_serializers, mode=FileMode())
+        with open("serializers.py", "w") as file3:
+            file3.write(formatted_code)
+            secho("Django serializers.py finished rendering.", fg="green")
+
+    def _render_urls(self, model_names: List[str]) -> None:
+        snaked_model_names = [convert_to_snake(name) for name in model_names]
+        paired_names = dict(zip(model_names, snaked_model_names))
+        template_urls = env.get_template("django_urls.txt.jinja")
+        output_urls = template_urls.render(names=paired_names)
+        formatted_code = format_str(output_urls, mode=FileMode())
+        with open("urls_class.py", "w") as file3:
+            file3.write(formatted_code)
+            secho("Django urls_class.py finished rendering.", fg="green")
 
 
 class SQLAlchemyORM:
@@ -34,76 +93,15 @@ class PeeweeORM:
 
 def generate() -> None:
     """
-    get Reactant subclasses,
-    identify ORM,
-    map Reactant/ORM subclass attributes to ORM model field types,
-    render from template
+    Deliver Reactant classes to appropriate CombustionChamber
     """
-    # Need to store the generated models before rendering to avoid rewrites
-    # that cause the "import"'s being always re-rendered and duplicated.
-    dj_models = []
+    dj_classes = [
+        cls for cls in DjangoORM.__subclasses__() if issubclass(cls, Reactant)
+    ]
 
-    # Generate models with proper field types according to ORM
-    for cls in Reactant.__subclasses__():
-        if issubclass(cls, DjangoORM):
-            model = cls.generate_django_orm_models(cls)
-            dj_models.append(model)
-
-        if issubclass(cls, SQLAlchemyORM):
-            pass
-
-        if issubclass(cls, PeeweeORM):
-            pass
-
-    # Checks and renders
-    if dj_models:
-        render_django(dj_models)
-
-
-def render_django(models: List[NamedTuple]) -> None:
-    model_names = [model.name for model in models]
-
-    render_dj_models(models)
-    render_dj_views(model_names)
-    render_dj_serializers(models, model_names)
-    render_dj_urls(model_names)
-
-
-def render_dj_models(models: List[NamedTuple]) -> None:
-    template_models = env.get_template("django_models.txt.jinja")
-    output_models = template_models.render(models=models)
-    formatted_code = format_str(output_models, mode=FileMode())
-    with open("models.py", "w") as file1:
-        file1.write(formatted_code)
-        secho("Django models.py finish rendering.", fg="green")
-
-
-def render_dj_views(model_names: List[str]) -> None:
-    # class-based API views.py
-    template_views = env.get_template("django_views.txt.jinja")
-    output_views = template_views.render(names=model_names)
-    formatted_code = format_str(output_views, mode=FileMode())
-    with open("views_class.py", "w") as file2:
-        file2.write(formatted_code)
-        secho("Django views_class.py finish rendering.", fg="green")
-
-
-def render_dj_serializers(models: List[NamedTuple], model_names: List[str]) -> None:
-    template_serializers = env.get_template("django_serializers.txt.jinja")
-    output_serializers = template_serializers.render(models=models, names=model_names)
-    formatted_code = format_str(output_serializers, mode=FileMode())
-    with open("serializers.py", "w") as file3:
-        file3.write(formatted_code)
-        secho("Django serializers.py finish rendering.", fg="green")
-
-
-def render_dj_urls(model_names: List[str]) -> None:
-    # class-based urls.py
-    snaked_model_names = [convert_to_snake(name) for name in model_names]
-    paired_names = dict(zip(model_names, snaked_model_names))
-    template_urls = env.get_template("django_urls.txt.jinja")
-    output_urls = template_urls.render(names=paired_names)
-    formatted_code = format_str(output_urls, mode=FileMode())
-    with open("urls_class.py", "w") as file3:
-        file3.write(formatted_code)
-        secho("Django urls_class.py finish rendering.", fg="green")
+    if dj_classes:
+        secho(f"Found {len(dj_classes)} Django reactants.", fg="blue")
+        dj_rxn = DjangoCombustionChamber(dj_classes)
+        dj_rxn.render_manager()
+    else:
+        secho("No Django reactants found.", fg="blue")

@@ -33,10 +33,10 @@ class DjangoModel(NamedTuple):
 
 
 class DjangoORM:
-    def generate_django_orm_models(self) -> DjangoModel:
-        model_name = self.__name__
+    def generate_django_orm_model(self) -> DjangoModel:
+        table_name = self.__name__
         columns = self._get_columns(self)
-        model = DjangoModel(name=model_name, fields=columns)
+        model = DjangoModel(name=table_name, fields=columns)
         return model
 
     def _get_columns(self) -> List[FieldOptions]:
