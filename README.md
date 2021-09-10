@@ -1,6 +1,6 @@
 <p align="center">
     <a href="#">
-        <img width="1200" src="https://raw.githubusercontent.com/neil-vqa/reactant/main/reactant-logo.png">
+        <img width="1200" src="https://raw.githubusercontent.com/neil-vqa/reactant/main/reactant-logo-banner.png">
     </a>
 </p>
 
@@ -8,7 +8,7 @@
 
 *reactant* aims to be non-intrusive and disposable as possible, but also to give usable and sensible code defaults.
 
-Who wants an entire new dependency just to generate code? I don't, she doesn't, he doesn't, we don't! So, if you're like us, just spawn a new virtual environment somewhere for this.
+Who wants an entire new dependency just to generate code? I don't, she doesn't, he doesn't, we don't. So, if you're like us, just spawn a new virtual environment somewhere for this.
 
 ## Supported Frameworks
 
@@ -42,7 +42,7 @@ Create *reactant* models by inheriting from `Reactant` , and from choosing an OR
 ```python
 
 from typing import Optional
-from reactant import Reactant, DjangoORM, generate, Field
+from reactant import Reactant, DjangoORM, Field, generate
 
 
 class RocketEngine(Reactant, DjangoORM):
@@ -66,4 +66,4 @@ if __name__ == "__main__":
 
 ```
 
-Don't forget `generate()`. Run the code. **BOOM!** With the above code, the models, views, serializers, and urls (for Django atleast) are generated, the *by-product of your reactants*.
+Don't forget `generate()`. Run the code. **BOOM!** With just the above code, the models, views, serializers, and urls (the *products*, for Django atleast) are generated.
