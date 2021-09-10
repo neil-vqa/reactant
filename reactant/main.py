@@ -1,7 +1,9 @@
+from reactant.orm import DjangoORM
 from typing import Any, Dict, List, NamedTuple, Optional, Union
 from pydantic import BaseModel
 from jinja2 import Environment, PackageLoader
 from black import format_str, FileMode
+from click import secho
 from reactant.utils import convert_to_snake
 
 
@@ -16,9 +18,8 @@ class Reactant(BaseModel):
         super().__init__(**data)
 
 
-class DjangoORM:
-    def __str__():
-        return "django"
+class Combustion:
+    pass
 
 
 class SQLAlchemyORM:
@@ -31,7 +32,7 @@ class PeeweeORM:
         return "peewee"
 
 
-def generate():
+def generate() -> None:
     """
     get Reactant subclasses,
     identify ORM,
@@ -45,9 +46,7 @@ def generate():
     # Generate models with proper field types according to ORM
     for cls in Reactant.__subclasses__():
         if issubclass(cls, DjangoORM):
-            from reactant.orm import generate_django_orm_models
-
-            model = generate_django_orm_models(cls)
+            model = cls.generate_django_orm_models(cls)
             dj_models.append(model)
 
         if issubclass(cls, SQLAlchemyORM):
@@ -61,34 +60,45 @@ def generate():
         render_django(dj_models)
 
 
-def render_django(models: List[NamedTuple]):
+def render_django(models: List[NamedTuple]) -> None:
     model_names = [model.name for model in models]
 
-    # render models.py
+    render_dj_models(models)
+    render_dj_views(model_names)
+    render_dj_serializers(models, model_names)
+    render_dj_urls(model_names)
+
+
+def render_dj_models(models: List[NamedTuple]) -> None:
     template_models = env.get_template("django_models.txt.jinja")
     output_models = template_models.render(models=models)
     formatted_code = format_str(output_models, mode=FileMode())
     with open("models.py", "w") as file1:
         file1.write(formatted_code)
-        print("Django models.py finish rendering.")
+        secho("Django models.py finish rendering.", fg="green")
 
-    # render class-based API views.py
+
+def render_dj_views(model_names: List[str]) -> None:
+    # class-based API views.py
     template_views = env.get_template("django_views.txt.jinja")
     output_views = template_views.render(names=model_names)
     formatted_code = format_str(output_views, mode=FileMode())
     with open("views_class.py", "w") as file2:
         file2.write(formatted_code)
-        print("Django views_class.py finish rendering.")
+        secho("Django views_class.py finish rendering.", fg="green")
 
-    # render serializers.py
+
+def render_dj_serializers(models: List[NamedTuple], model_names: List[str]) -> None:
     template_serializers = env.get_template("django_serializers.txt.jinja")
     output_serializers = template_serializers.render(models=models, names=model_names)
     formatted_code = format_str(output_serializers, mode=FileMode())
     with open("serializers.py", "w") as file3:
         file3.write(formatted_code)
-        print("Django serializers.py finish rendering.")
+        secho("Django serializers.py finish rendering.", fg="green")
 
-    # render class-based urls.py
+
+def render_dj_urls(model_names: List[str]) -> None:
+    # class-based urls.py
     snaked_model_names = [convert_to_snake(name) for name in model_names]
     paired_names = dict(zip(model_names, snaked_model_names))
     template_urls = env.get_template("django_urls.txt.jinja")
@@ -96,4 +106,4 @@ def render_django(models: List[NamedTuple]):
     formatted_code = format_str(output_urls, mode=FileMode())
     with open("urls_class.py", "w") as file3:
         file3.write(formatted_code)
-        print("Django urls_class.py finish rendering.")
+        secho("Django urls_class.py finish rendering.", fg="green")

@@ -1,1 +1,1 @@
-from .django import generate_django_orm_models
+from .django import DjangoORM
