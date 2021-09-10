@@ -1,9 +1,8 @@
 from typing import Any, Dict, List, NamedTuple, Optional, Union
 from pydantic import BaseModel
-from pydantic.fields import Undefined, FieldInfo, UndefinedType
 from jinja2 import Environment, PackageLoader
-from yapf.yapflib.yapf_api import FormatCode
-from .utils import convert_to_snake
+from black import format_str, FileMode
+from reactant.utils import convert_to_snake
 
 
 env = Environment(
@@ -68,7 +67,7 @@ def render_django(models: List[NamedTuple]):
     # render models.py
     template_models = env.get_template("django_models.txt.jinja")
     output_models = template_models.render(models=models)
-    formatted_code, _ = FormatCode(output_models)
+    formatted_code = format_str(output_models, mode=FileMode())
     with open("models.py", "w") as file1:
         file1.write(formatted_code)
         print("Django models.py finish rendering.")
@@ -76,7 +75,7 @@ def render_django(models: List[NamedTuple]):
     # render class-based API views.py
     template_views = env.get_template("django_views.txt.jinja")
     output_views = template_views.render(names=model_names)
-    formatted_code, _ = FormatCode(output_views)
+    formatted_code = format_str(output_views, mode=FileMode())
     with open("views_class.py", "w") as file2:
         file2.write(formatted_code)
         print("Django views_class.py finish rendering.")
@@ -84,7 +83,7 @@ def render_django(models: List[NamedTuple]):
     # render serializers.py
     template_serializers = env.get_template("django_serializers.txt.jinja")
     output_serializers = template_serializers.render(models=models, names=model_names)
-    formatted_code, _ = FormatCode(output_serializers)
+    formatted_code = format_str(output_serializers, mode=FileMode())
     with open("serializers.py", "w") as file3:
         file3.write(formatted_code)
         print("Django serializers.py finish rendering.")
@@ -94,7 +93,7 @@ def render_django(models: List[NamedTuple]):
     paired_names = dict(zip(model_names, snaked_model_names))
     template_urls = env.get_template("django_urls.txt.jinja")
     output_urls = template_urls.render(names=paired_names)
-    formatted_code, _ = FormatCode(output_urls)
+    formatted_code = format_str(output_urls, mode=FileMode())
     with open("urls_class.py", "w") as file3:
         file3.write(formatted_code)
         print("Django urls_class.py finish rendering.")
