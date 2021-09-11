@@ -50,6 +50,8 @@ class DjangoORM:
             if value.field_info.extra:
                 for k, v in value.field_info.extra.items():
                     extras[k] = v
+            if value.required == False:
+                extras["null"] = True
             if value.field_info.max_length:
                 extras["max_length"] = value.field_info.max_length
             if value.field_info.title:
