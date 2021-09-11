@@ -48,66 +48,73 @@ class DjangoCombustionChamber:
             raise
 
     def _render_models(self, models: List[NamedTuple]) -> None:
+        item_name = "models"
         try:
             template_models = env.get_template("django_models.txt.jinja")
             output_models = template_models.render(models=models)
             formatted_code = format_str(output_models, mode=FileMode())
-            with open("models.py", "w") as file1:
+            with open(f"{item_name}.py", "w") as file1:
                 file1.write(formatted_code)
         except TemplateNotFound:
             raise
         except Exception:
-            raise RenderFailed("models")
+            raise RenderFailed(item_name)
         else:
-            secho("Django models.py finished rendering.", fg="green")
+            self._success_secho(item_name)
 
     def _render_views(self, model_names: List[str]) -> None:
+        item_name = "views_class"
         try:
             template_views = env.get_template("django_views.txt.jinja")
             output_views = template_views.render(names=model_names)
             formatted_code = format_str(output_views, mode=FileMode())
-            with open("views_class.py", "w") as file2:
+            with open(f"{item_name}.py", "w") as file2:
                 file2.write(formatted_code)
         except TemplateNotFound:
             raise
         except Exception:
-            raise RenderFailed("views")
+            raise RenderFailed(item_name)
         else:
-            secho("Django views_class.py finished rendering.", fg="green")
+            self._success_secho(item_name)
 
     def _render_serializers(
         self, models: List[NamedTuple], model_names: List[str]
     ) -> None:
+        item_name = "serializers"
         try:
             template_serializers = env.get_template("django_serializers.txt.jinja")
             output_serializers = template_serializers.render(
                 models=models, names=model_names
             )
             formatted_code = format_str(output_serializers, mode=FileMode())
-            with open("serializers.py", "w") as file3:
+            with open(f"{item_name}.py", "w") as file3:
                 file3.write(formatted_code)
         except TemplateNotFound:
             raise
         except Exception:
-            raise RenderFailed("serializers")
+            raise RenderFailed(item_name)
         else:
-            secho("Django serializers.py finished rendering.", fg="green")
+            self._success_secho(item_name)
 
     def _render_urls(self, model_names: List[str]) -> None:
+        item_name = "urls_class"
         try:
             snaked_model_names = [convert_to_snake(name) for name in model_names]
             paired_names = dict(zip(model_names, snaked_model_names))
             template_urls = env.get_template("django_urls.txt.jinja")
             output_urls = template_urls.render(names=paired_names)
             formatted_code = format_str(output_urls, mode=FileMode())
-            with open("urls_class.py", "w") as file3:
+            with open(f"{item_name}.py", "w") as file3:
                 file3.write(formatted_code)
         except TemplateNotFound:
             raise
         except Exception:
-            raise RenderFailed("urls")
+            raise RenderFailed(item_name)
         else:
-            secho("Django urls_class.py finished rendering.", fg="green")
+            self._success_secho(item_name)
+
+    def _success_secho(self, item_name: str):
+        return secho(f"Django {item_name}.py finished rendering.", fg="green")
 
 
 class SQLAlchemyORM:
