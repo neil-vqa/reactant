@@ -7,9 +7,19 @@ class {{model.name}}(models.Model):
     {{ field.name }} = models.{{ field.type }}(
         {% for k, v in field.extras.items() %}
             {% if loop.last %}
-                {{ k }}={% if v is string %}{{ v|tojson }}{% else %}{{ v }}{% endif %}
+                {% if k == "relation" %}
+                    {{ v }}
+                {% elif k == "on_delete" %}
+                    {{ k }}={{ v }}
+                {% else %}
+                    {{ k }}={% if v is string %}{{ v|tojson }}{% else %}{{ v }}{% endif %}
+                {% endif %}
             {% else %}
-                {{ k }}={% if v is string %}{{ v|tojson }},{% else %}{{ v }},{% endif %}
+                {% if k == "relation" %}
+                    {{ v }},
+                {% else %}
+                    {{ k }}={% if v is string %}{{ v|tojson }},{% else %}{{ v }},{% endif %}
+                {% endif %}
             {% endif %}
         {% endfor %}
         )

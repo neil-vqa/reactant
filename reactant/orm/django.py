@@ -64,6 +64,20 @@ class DjangoCombustor:
                 extras["max_length"] = value.field_info.max_length
             if value.field_info.title:
                 extras["verbose_name"] = value.field_info.title
+            if "foreign_key" in value.field_info.extra.keys():
+                column_type.__name__ = "ForeignKey"
+                extras["relation"] = value.field_info.extra["foreign_key"]
+                extras["on_delete"] = "models.CASCADE"
+                extras.pop("foreign_key")
+            if "many_key" in value.field_info.extra.keys():
+                column_type.__name__ = "ManyToManyField"
+                extras["relation"] = value.field_info.extra["many_key"]
+                extras.pop("many_key")
+            if "one_key" in value.field_info.extra.keys():
+                column_type.__name__ = "OneToOneField"
+                extras["relation"] = value.field_info.extra["one_key"]
+                extras["on_delete"] = "models.CASCADE"
+                extras.pop("one_key")
 
             column_info = FieldOptions(
                 name=name, type=column_type.__name__, extras=extras

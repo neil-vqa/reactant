@@ -13,6 +13,8 @@ class LaunchVehicle(Reactant, DjangoORM):
     name: str = Field(max_length=32)
     country: str = Field(blank=True, max_length=32)
     status: str
+    total_launches: Optional[int]
+    engine: str = Field(foreign_key="RocketEngine")
 
 
 if __name__ == "__main__":
