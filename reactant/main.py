@@ -6,6 +6,8 @@ from jinja2 import Environment, PackageLoader
 from black import format_str, FileMode
 from click import secho
 from reactant.utils import convert_to_snake
+from reactant.exceptions import RenderFailed
+from jinja2.exceptions import TemplateNotFound
 
 
 env = Environment(
@@ -52,8 +54,10 @@ class DjangoCombustionChamber:
             formatted_code = format_str(output_models, mode=FileMode())
             with open("models.py", "w") as file1:
                 file1.write(formatted_code)
-        except Exception:
+        except TemplateNotFound:
             raise
+        except Exception:
+            raise RenderFailed("models")
         else:
             secho("Django models.py finished rendering.", fg="green")
 
@@ -64,8 +68,10 @@ class DjangoCombustionChamber:
             formatted_code = format_str(output_views, mode=FileMode())
             with open("views_class.py", "w") as file2:
                 file2.write(formatted_code)
-        except Exception:
+        except TemplateNotFound:
             raise
+        except Exception:
+            raise RenderFailed("views")
         else:
             secho("Django views_class.py finished rendering.", fg="green")
 
@@ -80,8 +86,10 @@ class DjangoCombustionChamber:
             formatted_code = format_str(output_serializers, mode=FileMode())
             with open("serializers.py", "w") as file3:
                 file3.write(formatted_code)
-        except Exception:
+        except TemplateNotFound:
             raise
+        except Exception:
+            raise RenderFailed("serializers")
         else:
             secho("Django serializers.py finished rendering.", fg="green")
 
@@ -94,8 +102,10 @@ class DjangoCombustionChamber:
             formatted_code = format_str(output_urls, mode=FileMode())
             with open("urls_class.py", "w") as file3:
                 file3.write(formatted_code)
-        except Exception:
+        except TemplateNotFound:
             raise
+        except Exception:
+            raise RenderFailed("urls")
         else:
             secho("Django urls_class.py finished rendering.", fg="green")
 
