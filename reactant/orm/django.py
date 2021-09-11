@@ -33,16 +33,18 @@ class DjangoModel(NamedTuple):
 
 
 class DjangoORM:
-    def generate_django_orm_model(self) -> DjangoModel:
-        table_name = self.__name__
-        columns = self._get_columns(self)
+    @staticmethod
+    def generate_django_orm_model(reactant) -> DjangoModel:
+        table_name = reactant.__name__
+        columns = reactant._get_columns(reactant)
         model = DjangoModel(name=table_name, fields=columns)
         return model
 
-    def _get_columns(self) -> List[FieldOptions]:
+    @staticmethod
+    def _get_columns(reactant) -> List[FieldOptions]:
         column_list = []
-        for name, value in self.__fields__.items():
-            column_type = self._map_type_to_orm_field(value)
+        for name, value in reactant.__fields__.items():
+            column_type = reactant._map_type_to_orm_field(value)
             extras = {}
 
             if not issubclass(type(value.field_info.default), UndefinedType):
@@ -64,6 +66,7 @@ class DjangoORM:
 
         return column_list
 
+    @staticmethod
     def _map_type_to_orm_field(field: ModelField) -> Any:
         if issubclass(field.type_, str):
             return CharField

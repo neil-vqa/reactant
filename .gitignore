@@ -145,3 +145,6 @@ views_function.py
 serializers.py
 urls_class.py
 urls_function.py
+
+# vs code
+.vscode/

@@ -1,6 +1,6 @@
 from reactant.orm.django import DjangoModel
 from reactant.orm import DjangoORM
-from typing import Any, Dict, List, NamedTuple, Optional, Union
+from typing import Any, Dict, List, NamedTuple, Optional, Type, Union
 from pydantic import BaseModel
 from jinja2 import Environment, PackageLoader
 from black import format_str, FileMode
@@ -27,9 +27,9 @@ class DjangoCombustionChamber:
 
     def _get_models(self) -> List[DjangoModel]:
         models = []
-        for cls in self.reactants:
+        for reactant in self.reactants:
             try:
-                model = cls.generate_django_orm_model(cls)
+                model = reactant.generate_django_orm_model(reactant)
                 models.append(model)
             except Exception:
                 raise
@@ -47,7 +47,7 @@ class DjangoCombustionChamber:
         except Exception:
             raise
 
-    def _render_models(self, models: List[NamedTuple]) -> None:
+    def _render_models(self, models: List[DjangoModel]) -> None:
         item_name = "models"
         try:
             template_models = env.get_template("django_models.txt.jinja")
@@ -78,7 +78,7 @@ class DjangoCombustionChamber:
             self._success_secho(item_name)
 
     def _render_serializers(
-        self, models: List[NamedTuple], model_names: List[str]
+        self, models: List[DjangoModel], model_names: List[str]
     ) -> None:
         item_name = "serializers"
         try:
@@ -118,12 +118,12 @@ class DjangoCombustionChamber:
 
 
 class SQLAlchemyORM:
-    def __str__():
+    def __str__(self):
         return "sqlalchemy"
 
 
 class PeeweeORM:
-    def __str__():
+    def __str__(self):
         return "peewee"
 
 
