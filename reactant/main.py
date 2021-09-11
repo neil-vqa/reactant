@@ -1,13 +1,15 @@
-from reactant.orm.django import DjangoModel
+from reactant.orm.django import DjangoModel, DjangoCombustor
 from reactant.orm import DjangoORM
-from typing import Any, Dict, List, NamedTuple, Optional, Type, Union
-from pydantic import BaseModel
-from jinja2 import Environment, PackageLoader
-from black import format_str, FileMode
-from click import secho
 from reactant.utils import convert_to_snake
 from reactant.exceptions import RenderFailed
+
+from typing import Any, Dict, List, NamedTuple, Optional, Type, Union
+from pydantic import BaseModel
+
+from jinja2 import Environment, PackageLoader
 from jinja2.exceptions import TemplateNotFound
+from black import format_str, FileMode
+from click import secho
 
 
 env = Environment(
@@ -22,14 +24,14 @@ class Reactant(BaseModel):
 
 
 class DjangoCombustionChamber:
-    def __init__(self, reactants: List[DjangoORM]) -> None:
+    def __init__(self, reactants: List[Type[DjangoORM]]) -> None:
         self.reactants = reactants
 
     def _get_models(self) -> List[DjangoModel]:
         models = []
         for reactant in self.reactants:
             try:
-                model = reactant.generate_django_orm_model(reactant)
+                model = DjangoCombustor.generate_django_orm_model(reactant)
                 models.append(model)
             except Exception:
                 raise

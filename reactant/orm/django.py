@@ -1,10 +1,12 @@
 import ipaddress
 import uuid
+
+from typing import Any, Dict, NamedTuple, List, Type
 from pydantic.fields import ModelField, UndefinedType
+
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, Dict, NamedTuple, List
 from django.db.models import (
     BinaryField,
     BooleanField,
@@ -21,6 +23,10 @@ from django.db.models import (
 )
 
 
+class DjangoORM:
+    pass
+
+
 class FieldOptions(NamedTuple):
     name: str
     type: str
@@ -32,19 +38,19 @@ class DjangoModel(NamedTuple):
     fields: List[FieldOptions]
 
 
-class DjangoORM:
-    @staticmethod
-    def generate_django_orm_model(reactant) -> DjangoModel:
+class DjangoCombustor:
+    @classmethod
+    def generate_django_orm_model(cls, reactant) -> DjangoModel:
         table_name = reactant.__name__
-        columns = reactant._get_columns(reactant)
+        columns = cls._get_columns(reactant)
         model = DjangoModel(name=table_name, fields=columns)
         return model
 
-    @staticmethod
-    def _get_columns(reactant) -> List[FieldOptions]:
+    @classmethod
+    def _get_columns(cls, reactant) -> List[FieldOptions]:
         column_list = []
         for name, value in reactant.__fields__.items():
-            column_type = reactant._map_type_to_orm_field(value)
+            column_type = cls._map_type_to_orm_field(value)
             extras = {}
 
             if not issubclass(type(value.field_info.default), UndefinedType):
@@ -66,8 +72,8 @@ class DjangoORM:
 
         return column_list
 
-    @staticmethod
-    def _map_type_to_orm_field(field: ModelField) -> Any:
+    @classmethod
+    def _map_type_to_orm_field(cls, field: ModelField) -> Any:
         if issubclass(field.type_, str):
             return CharField
         if issubclass(field.type_, float):
