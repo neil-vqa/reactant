@@ -78,6 +78,11 @@ class DjangoCombustor:
                 extras["relation"] = value.field_info.extra["one_key"]
                 extras["on_delete"] = "models.CASCADE"
                 extras.pop("one_key")
+            if (
+                column_type.__name__ == "CharField"
+                and value.field_info.max_length is None
+            ):
+                extras["max_length"] = 64
 
             column_info = FieldOptions(
                 name=name, type=column_type.__name__, extras=extras
