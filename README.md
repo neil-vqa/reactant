@@ -43,7 +43,7 @@ Create *reactant* models by inheriting from `Reactant` , and from choosing an OR
 
 ```python
 # generate.py
-
+from typing import Optional
 from reactant import Reactant, DjangoORM, Field, generate
 
 
