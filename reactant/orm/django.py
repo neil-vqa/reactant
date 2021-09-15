@@ -24,7 +24,8 @@ from django.db.models import (
 
 
 class DjangoORM:
-    pass
+    def __str__(self):
+        return "django"
 
 
 class FieldOptions(NamedTuple):
