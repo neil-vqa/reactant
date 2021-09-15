@@ -4,11 +4,11 @@
     </a>
 </p>
 
-(WIP) Generate code for *models, views, and urls* based on Python type annotations. Powered by [pydantic](https://github.com/samuelcolvin/pydantic/). Influenced by [SQLModel](https://github.com/tiangolo/sqlmodel).
+Generate code for *models, views, and urls* based on Python type annotations. Powered by [pydantic](https://github.com/samuelcolvin/pydantic/). Influenced by [SQLModel](https://github.com/tiangolo/sqlmodel).
 
-*reactant* aims to be non-intrusive and disposable as possible, but also to give usable and sensible code defaults.
+*reactant* aims to be non-intrusive and disposable, but also to give usable and sensible code defaults.
 
-Who wants an entire new dependency just to generate code? I don't, she doesn't, he doesn't, we don't. So, if you're like us, just spawn a new virtual environment somewhere for this.
+*reactant* does **not enforce** a particular application structure. Instead, it adheres to the default/minimal/common structure of the supported frameworks, and it is up to the developer to make use of the generated code to fit it to their application. Contibutions are warmly welcomed if you believe a particular structure is widely used and can benefit from code generation.
 
 ## Supported Frameworks
 
@@ -33,37 +33,69 @@ Who wants an entire new dependency just to generate code? I don't, she doesn't, 
 
 ## Installation
 
-Coming soon to PyPI.
+```cli
+$ pip install reactant
+```
 
 ## Get Started
 
 Create *reactant* models by inheriting from `Reactant` , and from choosing an ORM: `DjangoORM`, `SQLAlchemyORM`, `PeeweeORM`. The example below uses `DjangoORM`. Your choice of ORM will determine what code and files will be generated.
 
 ```python
+# generate.py
 
-from typing import Optional
 from reactant import Reactant, DjangoORM, Field, generate
 
 
 class RocketEngine(Reactant, DjangoORM):
-    id: int = Field(primary_key=True, title="rocket_id")
-    name: str = Field(max_length=32)
+    name: str = Field(max_length=32, title="engine_name")
     manufacturer: str = Field(max_length=64)
-    power_cycle: Optional[str] = Field(
-        "gas-generator", nullable=True, blank=True, max_length=32
-    )
-    thrust_weight_ratio: int
+    power_cycle: Optional[str] = Field("gas-generator", blank=True, max_length=32)
+    thrust_weight_ratio: Optional[int] = None
 
 
 class LaunchVehicle(Reactant, DjangoORM):
-    id: int = Field(primary_key=True)
     name: str = Field(max_length=32)
     country: str = Field(blank=True, max_length=32)
+    status: str
+    total_launches: Optional[int]
+    engine: str = Field(foreign_key="RocketEngine")
 
-
+# Don't forget this block.
 if __name__ == "__main__":
     generate()
 
 ```
 
-Don't forget `generate()`. Run the code. **BOOM!** With just the above code, the models, views, serializers, and urls (the *products*, for Django atleast) are generated.
+Don't forget `generate()`. Run the code. 
+
+```cli
+$ reactant generate.py
+
+Running generate.py
+Found 2 Django reactants.
+Django models.py finished rendering.
+Django views_class.py finished rendering.
+Django serializers.py finished rendering.
+Django urls_class.py finished rendering.
+Success! Please check "reactant_products" directory.
+```
+
+**BOOM!** With just the above code, the models, views, serializers, and urls (the *products*, for Django atleast) are generated.
+
+## Development
+
+The project uses Poetry to package and manage dependencies.
+
+```cli
+(venv)$ poetry install
+```
+
+Run tests.
+```cli
+pytest
+```
+
+## License
+
+MIT License. For more information and legal terms, see the LICENSE file.
