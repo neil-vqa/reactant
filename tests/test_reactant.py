@@ -39,7 +39,7 @@ def test_django_combustion_chamber_get_models_method_return_djangomodels():
         thrust_weight_ratio: int
 
     combust = DjangoCombustionChamber([RocketEngine])
-    models = combust._get_models()
+    models = combust.get_models()
 
     assert isinstance(models, list)
     assert isinstance(models[0], DjangoModel)
@@ -57,10 +57,11 @@ def test_generate_django_files_success():
 
     generate()
 
-    models = Path("models.py")
-    views_class = Path("views_class.py")
-    serializers = Path("serializers.py")
-    urls_class = Path("urls_class.py")
+    p = "reactant_products/django"
+    models = Path(f"{p}/models.py")
+    views_class = Path(f"{p}/views_class.py")
+    serializers = Path(f"{p}/serializers.py")
+    urls_class = Path(f"{p}/urls_class.py")
 
     assert models.is_file()
     assert views_class.is_file()

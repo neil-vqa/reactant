@@ -138,6 +138,7 @@ dmypy.json
 cython_debug/
 
 # reactant by-products
+reactant_products/
 models.py
 views.py
 views_class.py
