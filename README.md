@@ -1,14 +1,12 @@
 <p align="center">
-    <a href="#">
+    <a href="https://pypi.org/project/reactant">
         <img width="1200" src="https://raw.githubusercontent.com/neil-vqa/reactant/main/reactant-logo-banner.png">
     </a>
 </p>
 
 Generate code for *models, views, and urls* based on Python type annotations. Powered by [pydantic](https://github.com/samuelcolvin/pydantic/). Influenced by [SQLModel](https://github.com/tiangolo/sqlmodel).
 
-*reactant* aims to give usable and sensible code defaults.
-
-*reactant* does **not enforce** a particular application structure. Instead, it adheres to the default/minimal/common structure of the supported frameworks, and it is up to the developer to make use of the generated code to fit it to their application. Contibutions are warmly welcomed if you believe a particular structure is widely used and can benefit from code generation.
+*reactant* aims to give usable and sensible code defaults. It does **not enforce** a particular application structure. Instead, it follows the default/minimal/common structure of the supported frameworks, and it is up to the developer to make use of the generated code to fit it to their application. Contibutions are warmly welcomed if you believe a particular structure is widely used and can benefit from code generation.
 
 ## Supported Frameworks
 
@@ -22,6 +20,10 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 - [X] serializers
 - [X] urls (from class-based API views, filename=*urls_class.py*)
 - [ ] urls (from function-based API views, filename=*urls_function.py*)
+
+**Flask**
+
+- [ ] models (Flask-SQLAlchemy)
 
 **SQLAlchemy**
 
@@ -39,10 +41,11 @@ $ pip install reactant
 
 ## Get Started
 
-Create *reactant* models by inheriting from `Reactant` , and from choosing an ORM: `DjangoORM`, `SQLAlchemyORM`, `PeeweeORM`. The example below uses `DjangoORM`. Your choice of ORM will determine what code and files will be generated.
+Create *reactant* models by inheriting from `Reactant` , and from another auxiliary class: `DjangoORM`, `SQLAlchemyORM`, `PeeweeORM`. The example below uses `DjangoORM`. Your choice of ORM will determine what code and files will be generated.
 
 ```python
 # generate.py
+
 from typing import Optional
 from reactant import Reactant, DjangoORM, Field, generate
 
@@ -81,7 +84,30 @@ Django urls_class.py finished rendering.
 Success! Please check "reactant_products" directory.
 ```
 
-**BOOM!** With just the above code, the models, views, serializers, and urls (the *products*, for Django atleast) are generated.
+**BOOM!** With just the above code, the models, views, serializers, and urls (the *products*, for Django atleast) are generated. See images of the code below.
+
+## Sample Code Generated
+
+### Django REST
+
+<section>
+    <div style="display:flex;">
+        <div>
+            <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_01.png" width="auto">
+        </div>
+        <div>
+            <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_02.png" width="auto">
+        </div>
+    </div>
+    <div style="display:flex; height:auto;">
+        <div>
+            <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_03.png" width="auto">
+        </div>
+        <div>
+            <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_04.png" width="auto">
+        </div>
+    </div>
+</section>
 
 ## Development
 
