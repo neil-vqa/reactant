@@ -1,5 +1,5 @@
 from reactant.orm.django import DjangoModel, DjangoCombustor
-from reactant.orm import DjangoORM
+from reactant.orm import DjangoORM, PeeweeORM
 from reactant.utils import convert_to_snake
 from reactant.exceptions import RenderFailed
 
@@ -130,11 +130,6 @@ class DjangoCombustionChamber:
 class SQLAlchemyORM:
     def __str__(self):
         return "sqlalchemy"
-
-
-class PeeweeORM:
-    def __str__(self):
-        return "peewee"
 
 
 def classify_reactants() -> Tuple[List[Any], ...]:
