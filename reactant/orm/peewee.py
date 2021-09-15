@@ -7,25 +7,24 @@ from pydantic.fields import ModelField, UndefinedType
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from django.db.models import (
-    BinaryField,
-    BooleanField,
+from peewee import (
     CharField,
-    DateField,
-    DateTimeField,
-    DecimalField,
-    DurationField,
     FloatField,
-    GenericIPAddressField,
+    BooleanField,
     IntegerField,
+    DateTimeField,
+    DateField,
     TimeField,
+    BlobField,
+    DecimalField,
+    IPField,
     UUIDField,
 )
 
 
-class DjangoORM:
+class PeeweeORM:
     def __str__(self):
-        return "django"
+        return "peewee"
 
 
 class FieldOptions(NamedTuple):
@@ -34,17 +33,17 @@ class FieldOptions(NamedTuple):
     extras: Dict[Any, Any]
 
 
-class DjangoModel(NamedTuple):
+class PeeweeModel(NamedTuple):
     name: str
     fields: List[FieldOptions]
 
 
-class DjangoCombustor:
+class PeeweeCombustor:
     @classmethod
-    def generate_django_orm_model(cls, reactant) -> DjangoModel:
+    def generate_peewee_orm_model(cls, reactant) -> PeeweeModel:
         table_name = reactant.__name__
         columns = cls._get_columns(reactant)
-        model = DjangoModel(name=table_name, fields=columns)
+        model = PeeweeModel(name=table_name, fields=columns)
         return model
 
     @classmethod
@@ -66,24 +65,16 @@ class DjangoCombustor:
             if value.field_info.title:
                 extras["verbose_name"] = value.field_info.title
             if "foreign_key" in value.field_info.extra.keys():
-                column_type.__name__ = "ForeignKey"
+                column_type.__name__ = "ForeignKeyField"
                 extras["relation"] = value.field_info.extra["foreign_key"]
-                extras["on_delete"] = "models.CASCADE"
+                extras["on_delete"] = "CASCADE"
                 extras.pop("foreign_key")
-            if "many_key" in value.field_info.extra.keys():
-                column_type.__name__ = "ManyToManyField"
-                extras["relation"] = value.field_info.extra["many_key"]
-                extras.pop("many_key")
-            if "one_key" in value.field_info.extra.keys():
-                column_type.__name__ = "OneToOneField"
-                extras["relation"] = value.field_info.extra["one_key"]
-                extras["on_delete"] = "models.CASCADE"
-                extras.pop("one_key")
             if (
                 column_type.__name__ == "CharField"
                 and value.field_info.max_length is None
             ):
-                extras["max_length"] = 64
+                # peewee CherField has max_length=255
+                extras["max_length"] = 255
 
             column_info = FieldOptions(
                 name=name, type=column_type.__name__, extras=extras
@@ -106,22 +97,16 @@ class DjangoCombustor:
             return DateTimeField
         if issubclass(field.type_, date):
             return DateField
-        if issubclass(field.type_, timedelta):
-            return DurationField
         if issubclass(field.type_, time):
             return TimeField
         if issubclass(field.type_, bytes):
-            return BinaryField
+            return BlobField
         if issubclass(field.type_, Decimal):
             return DecimalField
         if issubclass(field.type_, ipaddress.IPv4Address):
-            return GenericIPAddressField
+            return IPField
         if issubclass(field.type_, ipaddress.IPv4Network):
-            return GenericIPAddressField
-        if issubclass(field.type_, ipaddress.IPv6Address):
-            return GenericIPAddressField
-        if issubclass(field.type_, ipaddress.IPv6Network):
-            return GenericIPAddressField
+            return IPField
         if issubclass(field.type_, Path):
             return CharField
         if issubclass(field.type_, uuid.UUID):
