@@ -1,12 +1,7 @@
 from reactant.orm.django import DjangoModel
-from reactant.main import DjangoCombustionChamber
-from reactant import (
-    __version__,
-    Reactant,
-    DjangoORM,
-    Field,
-    generate,
-)
+from reactant.orm.peewee import PeeweeModel
+from reactant.main import DjangoCombustionChamber, PeeweeCombustionChamber
+from reactant import __version__, Reactant, DjangoORM, Field, generate, PeeweeORM
 from typing import Optional
 from pathlib import Path
 
@@ -15,60 +10,84 @@ def test_version():
     assert __version__ == "0.1.1"
 
 
-def test_reactant_model_if_a_django_orm_subclass():
-    class RocketEngine(Reactant, DjangoORM):
-        id: int = Field(primary_key=True, title="rocket_id")
-        name: str = Field(max_length=32)
-        manufacturer: str = Field(max_length=64)
-        power_cycle: Optional[str] = Field(
-            "gas-generator", nullable=True, blank=True, max_length=32
-        )
-        thrust_weight_ratio: int
+class TestDjango:
+    def test_django_combustion_chamber_get_models_method_return_djangomodels(self):
+        class RocketEngine(Reactant, DjangoORM):
+            id: int = Field(primary_key=True, title="rocket_id")
+            name: str = Field(max_length=32)
+            manufacturer: str = Field(max_length=64)
+            power_cycle: Optional[str] = Field(
+                "gas-generator", nullable=True, blank=True, max_length=32
+            )
+            thrust_weight_ratio: int
 
-    assert issubclass(RocketEngine, DjangoORM)
+        combust = DjangoCombustionChamber([RocketEngine])
+        models = combust.get_models()
+
+        assert isinstance(models, list)
+        assert isinstance(models[0], DjangoModel)
+
+    def test_generate_django_files_success(self):
+        class RocketEngine(Reactant, DjangoORM):
+            id: int = Field(primary_key=True, title="rocket_id")
+            name: str = Field(max_length=32)
+            manufacturer: str = Field(max_length=64)
+            power_cycle: Optional[str] = Field(
+                "gas-generator", nullable=True, blank=True, max_length=32
+            )
+            thrust_weight_ratio: int
+
+        generate()
+
+        p = "reactant_products/django"
+        dj_models = Path(f"{p}/models.py")
+        dj_views_class = Path(f"{p}/views_class.py")
+        dj_serializers = Path(f"{p}/serializers.py")
+        dj_urls_class = Path(f"{p}/urls_class.py")
+
+        assert dj_models.is_file()
+        assert dj_views_class.is_file()
+        assert dj_serializers.is_file()
+        assert dj_urls_class.is_file()
+
+        dj_models.unlink()
+        dj_views_class.unlink()
+        dj_serializers.unlink()
+        dj_urls_class.unlink()
 
 
-def test_django_combustion_chamber_get_models_method_return_djangomodels():
-    class RocketEngine(Reactant, DjangoORM):
-        id: int = Field(primary_key=True, title="rocket_id")
-        name: str = Field(max_length=32)
-        manufacturer: str = Field(max_length=64)
-        power_cycle: Optional[str] = Field(
-            "gas-generator", nullable=True, blank=True, max_length=32
-        )
-        thrust_weight_ratio: int
+class TestPeewee:
+    def test_peewee_combustion_chamber_get_models_method_return_peeweemodels(self):
+        class RocketEngine(Reactant, PeeweeORM):
+            id: int = Field(primary_key=True, title="rocket_id")
+            name: str = Field(max_length=32)
+            manufacturer: str = Field(max_length=64)
+            power_cycle: Optional[str] = Field(
+                "gas-generator", nullable=True, blank=True, max_length=32
+            )
+            thrust_weight_ratio: int
 
-    combust = DjangoCombustionChamber([RocketEngine])
-    models = combust.get_models()
+        combust = PeeweeCombustionChamber([RocketEngine])
+        models = combust.get_models()
 
-    assert isinstance(models, list)
-    assert isinstance(models[0], DjangoModel)
+        assert isinstance(models, list)
+        assert isinstance(models[0], PeeweeModel)
 
+    def test_generate_peewee_files_success(self):
+        class RocketEngine(Reactant, PeeweeORM):
+            id: int = Field(primary_key=True, title="rocket_id")
+            name: str = Field(max_length=32)
+            manufacturer: str = Field(max_length=64)
+            power_cycle: Optional[str] = Field(
+                "gas-generator", nullable=True, blank=True, max_length=32
+            )
+            thrust_weight_ratio: int
 
-def test_generate_django_files_success():
-    class RocketEngine(Reactant, DjangoORM):
-        id: int = Field(primary_key=True, title="rocket_id")
-        name: str = Field(max_length=32)
-        manufacturer: str = Field(max_length=64)
-        power_cycle: Optional[str] = Field(
-            "gas-generator", nullable=True, blank=True, max_length=32
-        )
-        thrust_weight_ratio: int
+        generate()
 
-    generate()
+        p = "reactant_products/peewee"
+        models = Path(f"{p}/models.py")
 
-    p = "reactant_products/django"
-    models = Path(f"{p}/models.py")
-    views_class = Path(f"{p}/views_class.py")
-    serializers = Path(f"{p}/serializers.py")
-    urls_class = Path(f"{p}/urls_class.py")
+        assert models.is_file()
 
-    assert models.is_file()
-    assert views_class.is_file()
-    assert serializers.is_file()
-    assert urls_class.is_file()
-
-    models.unlink()
-    views_class.unlink()
-    serializers.unlink()
-    urls_class.unlink()
+        models.unlink()

@@ -2,19 +2,19 @@ from typing import Optional
 from reactant import Reactant, DjangoORM, Field, generate, PeeweeORM
 
 
-class RocketEngine(Reactant, PeeweeORM):
+class RocketEngine(Reactant, DjangoORM):
     name: str = Field(max_length=32, title="engine_name")
     manufacturer: str = Field(max_length=64)
     power_cycle: Optional[str] = Field("gas-generator", blank=True, max_length=32)
     thrust_weight_ratio: Optional[int] = None
 
 
-class LaunchVehicle(Reactant, PeeweeORM):
+class LaunchVehicle(Reactant, DjangoORM):
     name: str = Field(max_length=32)
     country: str = Field(blank=True, max_length=32)
     status: str
     total_launches: Optional[int]
-    engine: str = Field(foreign_key="RocketEngine", backref="vehicle")
+    engine: str = Field(foreign_key="RocketEngine")
 
 
 if __name__ == "__main__":
