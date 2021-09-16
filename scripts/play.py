@@ -1,5 +1,5 @@
 from typing import Optional
-from reactant import Reactant, DjangoORM, Field, generate
+from reactant import Reactant, DjangoORM, Field, generate, PeeweeORM
 
 
 class RocketEngine(Reactant, DjangoORM):
