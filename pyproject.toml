@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "reactant"
-version = "0.1.1"
+version = "0.2.1"
 description = "Generate code for models, views, and urls based on Python type annotations."
 authors = ["Neil Van <nvq.alino@gmail.com>"]
 license = "MIT"

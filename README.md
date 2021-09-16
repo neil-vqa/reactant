@@ -31,7 +31,7 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 
 **Peewee**
 
-- [ ] models
+- [X] models
 
 ## Installation
 
