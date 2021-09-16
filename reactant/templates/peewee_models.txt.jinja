@@ -1,0 +1,51 @@
+from peewee import Model, PostgresqlDatabase, {% for field in fields_set %}{% if loop.last %}{{ field }}{% else %}{{ field }},{% endif %}{% endfor %}
+
+db = PostgresqlDatabase(
+    'database_name',
+    user='postgres',  
+    password='secret',
+    host='db.mysite.com')
+
+# db = MySQLDatabase(
+#     'database_name', 
+#     user='mysql',
+#     password='secret',
+#     host='db.mysite.com')
+
+# db = SqliteDatabase(
+#     'database_name.db', 
+#     pragmas={
+#         'journal_mode': 'wal'
+#         }
+#     )
+
+class BaseModel(Model):
+    class Meta:
+        database = db
+
+{% for model in models %}
+class {{model.name}}(BaseModel):  
+{% for field in model.fields %}
+    {{ field.name }} = {{ field.type }}(
+        {% for option in field.extras %}
+            {% if loop.last %}
+                {% for k, v in option.items() %}
+                    {% if k == "relation" %}
+                        {{ v }}
+                    {% else %}
+                        {{ k }}={% if v is string %}{{ v|tojson }}{% else %}{{ v }}{% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for k, v in option.items() %}
+                    {% if k == "relation" %}
+                        {{ v }},
+                    {% else %}
+                        {{ k }}={% if v is string %}{{ v|tojson }},{% else %}{{ v }},{% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        )
+{% endfor %}
+{% endfor %}

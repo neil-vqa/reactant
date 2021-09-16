@@ -1,9 +1,16 @@
 from reactant.orm.django import DjangoModel, DjangoCombustor
+from reactant.orm.peewee import PeeweeModel, PeeweeCombustor
 from reactant.orm import DjangoORM, PeeweeORM
 from reactant.utils import convert_to_snake
 from reactant.exceptions import RenderFailed
 
-from typing import Any, Dict, List, NamedTuple, Optional, Sequence, Tuple, Type, Union
+from typing import (
+    Any,
+    Iterable,
+    List,
+    Tuple,
+    Type,
+)
 from pydantic import BaseModel
 
 from jinja2 import Environment, PackageLoader
@@ -127,6 +134,63 @@ class DjangoCombustionChamber:
         return secho(f"Django {item_name}.py finished rendering.", fg="green")
 
 
+class PeeweeCombustionChamber:
+    def __init__(self, reactants: List[Type[PeeweeORM]]) -> None:
+        self.reactants = reactants
+
+    def get_models(self) -> List[PeeweeModel]:
+        models = []
+        for reactant in self.reactants:
+            try:
+                model = PeeweeCombustor.generate_peewee_orm_model(reactant)
+                models.append(model)
+            except Exception:
+                raise
+        return models
+
+    def render_manager(self) -> None:
+        try:
+            models = self.get_models()
+            fields_list = []
+            for model in models:
+                for field in model.fields:
+                    fields_list.append(field.type)
+            fields_set = set(fields_list)
+            models_code, models_name_str = self.render_models(models, fields_set)
+            self.write_to_file(models_code, models_name_str)
+        except Exception:
+            raise
+
+    def render_models(
+        self, models: List[PeeweeModel], fields_set: Iterable
+    ) -> Tuple[str, str]:
+        item_name = "models"
+        try:
+            template_models = env.get_template("peewee_models.txt.jinja")
+            output_models = template_models.render(models=models, fields_set=fields_set)
+        except TemplateNotFound:
+            raise
+        except Exception:
+            raise RenderFailed(item_name)
+        else:
+            return (output_models, item_name)
+
+    def write_to_file(self, item: Any, item_name: str) -> None:
+        try:
+            p = Path("reactant_products/peewee")
+            p.mkdir(parents=True, exist_ok=True)
+            formatted_code = format_str(item, mode=FileMode())
+            with open(f"{p}/{item_name}.py", "w") as file:
+                file.write(formatted_code)
+        except Exception:
+            raise
+        else:
+            self._success_secho(item_name)
+
+    def _success_secho(self, item_name: str):
+        return secho(f"Peewee {item_name}.py finished rendering.", fg="green")
+
+
 class SQLAlchemyORM:
     def __str__(self):
         return "sqlalchemy"
@@ -161,3 +225,10 @@ def generate() -> None:
         dj_rxn.render_manager()
     else:
         secho("No Django reactants found.", fg="blue")
+
+    if peewee_classes:
+        secho(f"Found {len(peewee_classes)} Peewee reactants.", fg="blue")
+        pw_rxn = PeeweeCombustionChamber(peewee_classes)
+        pw_rxn.render_manager()
+    else:
+        secho("No Peewee reactants found.", fg="blue")
