@@ -48,20 +48,22 @@ Create *reactant* models by inheriting from `Reactant` , and from another auxili
 
 from typing import Optional
 from reactant import Reactant, DjangoORM, Field, generate
+from datetime import date
 
 
 class RocketEngine(Reactant, DjangoORM):
     name: str = Field(max_length=32, title="engine_name")
-    manufacturer: str = Field(max_length=64)
-    power_cycle: Optional[str] = Field("gas-generator", blank=True, max_length=32)
+    manufacturer: Optional[str]
+    power_cycle: Optional[str] = "gas-generator"
     thrust_weight_ratio: Optional[int] = None
 
 
 class LaunchVehicle(Reactant, DjangoORM):
     name: str = Field(max_length=32)
-    country: str = Field(blank=True, max_length=32)
+    country: str = Field("USA", max_length=32)
     status: str
     total_launches: Optional[int]
+    first_flight: Optional[date]
     engine: str = Field(foreign_key="RocketEngine")
 
 # Don't forget this block.
@@ -90,24 +92,18 @@ Success! Please check "reactant_products" directory.
 
 ### Django REST
 
-<section>
-    <div style="display:flex;">
-        <div>
-            <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_01.png" width="auto">
-        </div>
-        <div>
-            <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_02.png" width="auto">
-        </div>
-    </div>
-    <div style="display:flex; height:auto;">
-        <div>
-            <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_03.png" width="auto">
-        </div>
-        <div>
-            <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_04.png" width="auto">
-        </div>
-    </div>
-</section>
+<div>
+    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_01.png" width="auto">
+</div>
+<div>
+    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_02.png" width="auto">
+</div>
+<div>
+    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_03.png" width="auto">
+</div>
+<div>
+    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_04.png" width="auto">
+</div>
 
 ## Development
 
