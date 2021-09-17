@@ -93,16 +93,16 @@ Success! Please check "reactant_products" directory.
 ### Django REST
 
 <div>
-    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_01.png" width="auto">
+    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_01n.png" width="auto">
 </div>
 <div>
-    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_02.png" width="auto">
+    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_02n.png" width="auto">
 </div>
 <div>
-    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_03.png" width="auto">
+    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_03n.png" width="auto">
 </div>
 <div>
-    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_04.png" width="auto">
+    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_04n.png" width="auto">
 </div>
 
 ## Development
