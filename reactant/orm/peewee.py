@@ -1,7 +1,7 @@
 import ipaddress
 import uuid
 
-from typing import Any, Dict, NamedTuple, List
+from typing import Any, Dict, NamedTuple, List, Sequence
 from pydantic.fields import ModelField, UndefinedType
 
 from datetime import date, datetime, time, timedelta
@@ -34,6 +34,41 @@ class PeeweeModel(NamedTuple):
 
 
 class PeeweeCombustor:
+    valid_arguments: List[str] = [
+        # general
+        "null",
+        "index",
+        "unique",
+        "column_name",
+        "default",
+        "primary_key",
+        "constraints",
+        "sequence",
+        "collation",
+        "unindexed",
+        "choices",
+        "help_text",
+        "verbose_name",
+        "index_type",
+        "foreign_key",
+        # field type-specific
+        "formats",
+        "resolution",
+        "utc",
+        "max_digits",
+        "decimal_places",
+        "auto_round",
+        "rounding",
+        "model",
+        "field",
+        "backref",
+        "on_delete",
+        "on_update",
+        "deferrable",
+        "lazy_load",
+        "adapt",
+    ]
+
     @classmethod
     def generate_peewee_orm_model(cls, reactant) -> PeeweeModel:
         table_name = reactant.__name__
@@ -46,32 +81,12 @@ class PeeweeCombustor:
         column_list = []
         for name, value in reactant.__fields__.items():
             column_type = cls._map_type_to_orm_field(value)
-            extras_list = []
-
-            if not issubclass(type(value.field_info.default), UndefinedType):
-                extras_list.append({"default": value.field_info.default})
-            if value.field_info.extra:
-                for k, v in value.field_info.extra.items():
-                    if k == "foreign_key":
-                        extras_list.insert(0, {"relation": v})
-                    else:
-                        extras_list.append({f"{k}": v})
-            if value.required == False:
-                extras_list.append({"null": True})
-            if value.field_info.max_length:
-                extras_list.append({"max_length": value.field_info.max_length})
-            if value.field_info.title:
-                extras_list.append({"verbose_name": value.field_info.title})
-            if "foreign_key" in value.field_info.extra.keys():
-                column_type.__name__ = "ForeignKeyField"
-            if (
-                column_type.__name__ == "CharField"
-                and value.field_info.max_length is None
-            ):
-                extras_list.append({"max_length": 255})
+            column_type_final, extras_list = cls._filter_field_arguments(
+                column_type, value
+            )
 
             column_info = FieldOptions(
-                name=name, type=column_type.__name__, extras=extras_list
+                name=name, type=column_type_final.__name__, extras=extras_list
             )
             column_list.append(column_info)
 
@@ -107,3 +122,39 @@ class PeeweeCombustor:
             return CharField
         if issubclass(field.type_, uuid.UUID):
             return UUIDField
+
+    @classmethod
+    def _filter_field_arguments(cls, column_type: Any, value: Any) -> Sequence[Any]:
+        """
+        This will filter out options that are not valid for the given Field type,
+        and set defaults for required arguments that are not specified by the reactant model.
+        """
+
+        new_extra_options = {
+            k: value.field_info.extra[k]
+            for k in cls.valid_arguments
+            if k in value.field_info.extra
+        }
+
+        extras_list = []
+
+        if not issubclass(type(value.field_info.default), UndefinedType):
+            extras_list.append({"default": value.field_info.default})
+        if new_extra_options:
+            for k, v in new_extra_options.items():
+                if k == "foreign_key":
+                    extras_list.insert(0, {"relation": v})
+                else:
+                    extras_list.append({f"{k}": v})
+        if value.required == False:
+            extras_list.append({"null": True})
+        if value.field_info.max_length:
+            extras_list.append({"max_length": value.field_info.max_length})
+        if value.field_info.title:
+            extras_list.append({"verbose_name": value.field_info.title})
+        if "foreign_key" in new_extra_options.keys():
+            column_type.__name__ = "ForeignKeyField"
+        if column_type.__name__ == "CharField" and value.field_info.max_length is None:
+            extras_list.append({"max_length": 255})
+
+        return (column_type, extras_list)
