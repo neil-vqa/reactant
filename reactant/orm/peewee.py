@@ -1,7 +1,7 @@
 import ipaddress
 import uuid
 
-from typing import Any, Dict, NamedTuple, List, Type
+from typing import Any, Dict, NamedTuple, List
 from pydantic.fields import ModelField, UndefinedType
 
 from datetime import date, datetime, time, timedelta
@@ -79,6 +79,8 @@ class PeeweeCombustor:
 
     @classmethod
     def _map_type_to_orm_field(cls, field: ModelField) -> Any:
+        """SQLModel-inspired."""
+
         if issubclass(field.type_, str):
             return CharField
         if issubclass(field.type_, float):
