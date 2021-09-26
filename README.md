@@ -6,7 +6,7 @@
 
 Generate code for *models, views, and urls* based on Python type annotations. Powered by [pydantic](https://github.com/samuelcolvin/pydantic/). Influenced by [SQLModel](https://github.com/tiangolo/sqlmodel).
 
-*reactant* aims to give usable and sensible code defaults. It does **not enforce** a particular application structure. Instead, it follows the default/minimal/common structure of the supported frameworks, and it is up to the developer to make use of the generated code to fit it to their application. Contributions are warmly welcomed if you believe a particular structure is widely used and can benefit from code generation.
+*reactant* aims to give usable and sensible code defaults. It does **not enforce** a particular application structure. Instead, it follows the default/minimal/common structure of the supported frameworks, and the developer has the freedom of changing it (if necessary) to fit it to their application. Contributions are warmly welcomed if you believe a particular structure is widely used and can benefit from code generation.
 
 ## Supported Frameworks
 
