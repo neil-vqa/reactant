@@ -1,6 +1,5 @@
 from reactant.orm.django import DjangoModel, DjangoCombustor
 from reactant.orm.peewee import PeeweeModel, PeeweeCombustor
-from reactant.orm import DjangoORM, PeeweeORM
 from reactant.utils import convert_to_snake
 from reactant.exceptions import RenderFailed
 
@@ -31,7 +30,24 @@ class Reactant(BaseModel):
         super().__init__(**data)
 
 
+class DjangoORM(Reactant):
+    def __str__(self):
+        return "django"
+
+
+class PeeweeORM(Reactant):
+    def __str__(self):
+        return "peewee"
+
+
+class SQLAlchemyORM(Reactant):
+    def __str__(self):
+        return "sqlalchemy"
+
+
 class DjangoCombustionChamber:
+    """For rendering Reactant models that are DjangoORM subclasses."""
+
     def __init__(self, reactants: List[Type[DjangoORM]]) -> None:
         self.reactants = reactants
 
@@ -135,6 +151,8 @@ class DjangoCombustionChamber:
 
 
 class PeeweeCombustionChamber:
+    """For rendering Reactant models that are PeeweeORM subclasses."""
+
     def __init__(self, reactants: List[Type[PeeweeORM]]) -> None:
         self.reactants = reactants
 
@@ -191,30 +209,19 @@ class PeeweeCombustionChamber:
         return secho(f"Peewee {item_name}.py finished rendering.", fg="green")
 
 
-class SQLAlchemyORM:
-    def __str__(self):
-        return "sqlalchemy"
-
-
 def classify_reactants() -> Tuple[List[Any], ...]:
-    dj_classes = [
-        cls for cls in DjangoORM.__subclasses__() if issubclass(cls, Reactant)
-    ]
-
-    alchemy_classes = [
-        cls for cls in SQLAlchemyORM.__subclasses__() if issubclass(cls, Reactant)
-    ]
-
-    peewee_classes = [
-        cls for cls in PeeweeORM.__subclasses__() if issubclass(cls, Reactant)
-    ]
+    dj_classes = [cls for cls in DjangoORM.__subclasses__()]
+    alchemy_classes = [cls for cls in SQLAlchemyORM.__subclasses__()]
+    peewee_classes = [cls for cls in PeeweeORM.__subclasses__()]
 
     return (dj_classes, alchemy_classes, peewee_classes)
 
 
 def generate() -> None:
     """
-    Deliver Reactant classes to appropriate CombustionChamber
+    Deliver Reactant models to appropriate CombustionChamber.
+    CombustionChamber classes contain methods for rendering specific files
+    according to the selected Reactant subclass.
     """
 
     dj_classes, alchemy_classes, peewee_classes = classify_reactants()

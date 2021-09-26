@@ -1,7 +1,7 @@
 from reactant.orm.django import DjangoModel
 from reactant.orm.peewee import PeeweeModel
 from reactant.main import DjangoCombustionChamber, PeeweeCombustionChamber
-from reactant import __version__, Reactant, DjangoORM, Field, generate, PeeweeORM
+from reactant import __version__, DjangoORM, Field, generate, PeeweeORM
 from typing import Optional
 from pathlib import Path
 
@@ -12,7 +12,7 @@ def test_version():
 
 class TestDjango:
     def test_django_combustion_chamber_get_models_method_return_djangomodels(self):
-        class RocketEngine(Reactant, DjangoORM):
+        class RocketEngine(DjangoORM):
             id: int = Field(primary_key=True, title="rocket_id")
             name: str = Field(max_length=32)
             manufacturer: str = Field(max_length=64)
@@ -28,7 +28,7 @@ class TestDjango:
         assert isinstance(models[0], DjangoModel)
 
     def test_generate_django_files_success(self):
-        class RocketEngine(Reactant, DjangoORM):
+        class RocketEngine(DjangoORM):
             id: int = Field(primary_key=True, title="rocket_id")
             name: str = Field(max_length=32)
             manufacturer: str = Field(max_length=64)
@@ -58,7 +58,7 @@ class TestDjango:
 
 class TestPeewee:
     def test_peewee_combustion_chamber_get_models_method_return_peeweemodels(self):
-        class RocketEngine(Reactant, PeeweeORM):
+        class RocketEngine(PeeweeORM):
             id: int = Field(primary_key=True, title="rocket_id")
             name: str = Field(max_length=32)
             manufacturer: str = Field(max_length=64)
@@ -74,7 +74,7 @@ class TestPeewee:
         assert isinstance(models[0], PeeweeModel)
 
     def test_generate_peewee_files_success(self):
-        class RocketEngine(Reactant, PeeweeORM):
+        class RocketEngine(PeeweeORM):
             id: int = Field(primary_key=True, title="rocket_id")
             name: str = Field(max_length=32)
             manufacturer: str = Field(max_length=64)

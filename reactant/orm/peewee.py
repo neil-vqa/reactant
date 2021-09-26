@@ -22,11 +22,6 @@ from peewee import (
 )
 
 
-class PeeweeORM:
-    def __str__(self):
-        return "peewee"
-
-
 class FieldOptions(NamedTuple):
     name: str
     type: str

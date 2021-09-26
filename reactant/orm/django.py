@@ -23,11 +23,6 @@ from django.db.models import (
 )
 
 
-class DjangoORM:
-    def __str__(self):
-        return "django"
-
-
 class FieldOptions(NamedTuple):
     name: str
     type: str
