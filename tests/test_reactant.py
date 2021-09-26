@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def test_version():
-    assert __version__ == "0.2.1"
+    assert __version__ == "0.3.0"
 
 
 class TestDjango:
