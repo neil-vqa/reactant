@@ -26,7 +26,7 @@ from django.db.models import (
 class FieldOptions(NamedTuple):
     name: str
     type: str
-    extras: Dict[Any, Any]
+    extras: List[Dict[Any, Any]]
 
 
 class DjangoModel(NamedTuple):
@@ -47,41 +47,45 @@ class DjangoCombustor:
         column_list = []
         for name, value in reactant.__fields__.items():
             column_type = cls._map_type_to_orm_field(value)
-            extras = {}
+            extras_list = []
 
             if not issubclass(type(value.field_info.default), UndefinedType):
-                extras["default"] = value.field_info.default
+                extras_list.append({"default": value.field_info.default})
             if value.field_info.extra:
                 for k, v in value.field_info.extra.items():
-                    extras[k] = v
+                    if k == "foreign_key":
+                        column_type.__name__ = "ForeignKey"
+                        extras_list.insert(
+                            0, {"relation": value.field_info.extra["foreign_key"]}
+                        )
+                        extras_list.append({"on_delete": "models.CASCADE"})
+                    elif k == "many_key":
+                        column_type.__name__ = "ManyToManyField"
+                        extras_list.insert(
+                            0, {"relation": value.field_info.extra["many_key"]}
+                        )
+                    elif k == "one_key":
+                        column_type.__name__ = "OneToOneField"
+                        extras_list.insert(
+                            0, {"relation": value.field_info.extra["one_key"]}
+                        )
+                        extras_list.append({"on_delete": "models.CASCADE"})
+                    else:
+                        extras_list.append({f"{k}": v})
             if value.required == False:
-                extras["null"] = True
+                extras_list.append({"null": True})
             if value.field_info.max_length:
-                extras["max_length"] = value.field_info.max_length
+                extras_list.append({"max_length": value.field_info.max_length})
             if value.field_info.title:
-                extras["verbose_name"] = value.field_info.title
-            if "foreign_key" in value.field_info.extra.keys():
-                column_type.__name__ = "ForeignKey"
-                extras["relation"] = value.field_info.extra["foreign_key"]
-                extras["on_delete"] = "models.CASCADE"
-                extras.pop("foreign_key")
-            if "many_key" in value.field_info.extra.keys():
-                column_type.__name__ = "ManyToManyField"
-                extras["relation"] = value.field_info.extra["many_key"]
-                extras.pop("many_key")
-            if "one_key" in value.field_info.extra.keys():
-                column_type.__name__ = "OneToOneField"
-                extras["relation"] = value.field_info.extra["one_key"]
-                extras["on_delete"] = "models.CASCADE"
-                extras.pop("one_key")
+                extras_list.append({"verbose_name": value.field_info.title})
             if (
                 column_type.__name__ == "CharField"
                 and value.field_info.max_length is None
             ):
-                extras["max_length"] = 64
+                extras_list.append({"max_length": 64})
 
             column_info = FieldOptions(
-                name=name, type=column_type.__name__, extras=extras
+                name=name, type=column_type.__name__, extras=extras_list
             )
             column_list.append(column_info)
 
@@ -89,6 +93,8 @@ class DjangoCombustor:
 
     @classmethod
     def _map_type_to_orm_field(cls, field: ModelField) -> Any:
+        """SQLModel-inspired."""
+
         if issubclass(field.type_, str):
             return CharField
         if issubclass(field.type_, float):
