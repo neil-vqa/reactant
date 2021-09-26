@@ -5,21 +5,27 @@ from django.db import models
 class {{model.name}}(models.Model):  
 {% for field in model.fields %}
     {{ field.name }} = models.{{ field.type }}(
-        {% for k, v in field.extras.items() %}
+        {% for option in field.extras %}
             {% if loop.last %}
-                {% if k == "relation" %}
-                    {{ v }}
-                {% elif k == "on_delete" %}
-                    {{ k }}={{ v }}
-                {% else %}
-                    {{ k }}={% if v is string %}{{ v|tojson }}{% else %}{{ v }}{% endif %}
-                {% endif %}
+                {% for k, v in option.items() %}
+                    {% if k == "relation" %}
+                        {{ v }}
+                    {% elif k == "on_delete" %}
+                        {{ k }}={{ v }}
+                    {% else %}
+                        {{ k }}={% if v is string %}{{ v|tojson }}{% else %}{{ v }}{% endif %}
+                    {% endif %}
+                {% endfor %}
             {% else %}
-                {% if k == "relation" %}
-                    {{ v }},
-                {% else %}
-                    {{ k }}={% if v is string %}{{ v|tojson }},{% else %}{{ v }},{% endif %}
-                {% endif %}
+                {% for k, v in option.items() %}
+                    {% if k == "relation" %}
+                        {{ v }},
+                    {% elif k == "on_delete" %}
+                        {{ k }}={{ v }},
+                    {% else %}
+                        {{ k }}={% if v is string %}{{ v|tojson }},{% else %}{{ v }},{% endif %}
+                    {% endif %}
+                {% endfor %}
             {% endif %}
         {% endfor %}
         )

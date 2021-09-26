@@ -41,24 +41,24 @@ $ pip install reactant
 
 ## Get Started
 
-Create *reactant* models by inheriting from `Reactant` , and from another auxiliary class: `DjangoORM`, `SQLAlchemyORM`, `PeeweeORM`. The example below uses `DjangoORM`. Your choice of ORM will determine what code and files will be generated.
+Create *reactant* models by inheriting from `Reactant` subclasses: `DjangoORM`, `SQLAlchemyORM`, `PeeweeORM`. The example below uses `DjangoORM`. Your choice will determine what code and files will be generated.
 
 ```python
 # generate.py
 
 from typing import Optional
-from reactant import Reactant, DjangoORM, Field, generate
+from reactant import DjangoORM, Field, generate
 from datetime import date
 
 
-class RocketEngine(Reactant, DjangoORM):
+class RocketEngine(DjangoORM):
     name: str = Field(max_length=32, title="engine_name")
     manufacturer: Optional[str]
     power_cycle: Optional[str] = "gas-generator"
     thrust_weight_ratio: Optional[int] = None
 
 
-class LaunchVehicle(Reactant, DjangoORM):
+class LaunchVehicle(DjangoORM):
     name: str = Field(max_length=32)
     country: str = Field("USA", max_length=32)
     status: str
