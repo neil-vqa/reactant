@@ -16,7 +16,10 @@ class LaunchVehicle(DjangoORM):
     status: str
     total_launches: Optional[int]
     first_flight: Optional[date]
-    engine: str = Field(related_name="vehicle", foreign_key="RocketEngine")
+    engine: str = Field(
+        related_name="vehicle",
+        foreign_key="RocketEngine",
+    )
 
 
 if __name__ == "__main__":
