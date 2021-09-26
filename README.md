@@ -39,6 +39,8 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 $ pip install reactant
 ```
 
+NOTE: *reactant* isn't shipped with the supported frameworks. You MUST install `django`, `sqlalchemy`, `peewee`, or `flask` separately (be it in a virtual environment or globally).
+
 ## Get Started
 
 Create *reactant* models by inheriting from `Reactant` subclasses: `DjangoORM`, `SQLAlchemyORM`, `PeeweeORM`. The example below uses `DjangoORM`. Your choice will determine what code and files will be generated.
