@@ -1,6 +1,7 @@
 from reactant.orm.django import DjangoModel
 from reactant.orm.peewee import PeeweeModel
-from reactant.main import DjangoCombustionChamber, PeeweeCombustionChamber
+from reactant.renderer.django import DjangoCombustionChamber
+from reactant.renderer.peewee import PeeweeCombustionChamber
 from reactant import __version__, DjangoORM, Field, generate, PeeweeORM
 from typing import Optional
 from pathlib import Path
