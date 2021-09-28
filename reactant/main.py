@@ -1,10 +1,7 @@
-from pydantic import BaseModel
+from typing import Any, List, Tuple
+
 from click import secho
-from typing import (
-    Any,
-    List,
-    Tuple,
-)
+from pydantic import BaseModel
 
 
 class Reactant(BaseModel):
@@ -42,7 +39,7 @@ def generate() -> None:
     according to the selected Reactant subclass.
     """
 
-    dj_classes, alchemy_classes, peewee_classes = classify_reactants()
+    dj_classes, _, peewee_classes = classify_reactants()
     base_directory = "reactant_products"
 
     if dj_classes:

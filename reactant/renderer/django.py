@@ -1,21 +1,15 @@
-from reactant.orm.django import DjangoModel, DjangoCombustor
-from reactant.main import DjangoORM
-from reactant.utils import convert_to_snake
-from reactant.exceptions import RenderFailed
+from pathlib import Path
+from typing import Any, Iterable, List, Tuple, Type
 
-from typing import (
-    Any,
-    Iterable,
-    List,
-    Tuple,
-    Type,
-)
-
+from black import FileMode, format_str
+from click import secho
 from jinja2 import Environment, PackageLoader
 from jinja2.exceptions import TemplateNotFound
-from black import format_str, FileMode
-from click import secho
-from pathlib import Path
+
+from reactant.exceptions import RenderFailed
+from reactant.main import DjangoORM
+from reactant.orm.django import DjangoCombustor, DjangoModel
+from reactant.utils import convert_to_snake
 
 env = Environment(
     loader=PackageLoader("reactant"),
@@ -46,16 +40,20 @@ class DjangoCombustionChamber:
             model_names = [model.name for model in models]
 
             models_code, models_name_str = self.render_models(models)
-            views_code, views_name_str = self.render_views(model_names)
+            views_code, views_name_str = self.render_views_class(model_names)
+            views_func_code, views_func_name_str = self.render_views_func(model_names)
             serializers_code, serializers_name_str = self.render_serializers(
                 models, model_names
             )
-            urls_code, urls_name_str = self.render_urls(model_names)
+            urls_code, urls_name_str = self.render_urls_class(model_names)
+            urls_func_code, urls_func_name_str = self.render_urls_func(model_names)
 
             self.write_to_file(models_code, models_name_str)
             self.write_to_file(views_code, views_name_str)
+            self.write_to_file(views_func_code, views_func_name_str)
             self.write_to_file(serializers_code, serializers_name_str)
             self.write_to_file(urls_code, urls_name_str)
+            self.write_to_file(urls_func_code, urls_func_name_str)
         except Exception:
             raise
 
@@ -71,10 +69,10 @@ class DjangoCombustionChamber:
         else:
             return (output_models, item_name)
 
-    def render_views(self, model_names: List[str]) -> Tuple[str, str]:
+    def render_views_class(self, model_names: List[str]) -> Tuple[str, str]:
         item_name = "views_class"
         try:
-            template_views = env.get_template("django_views.txt.jinja")
+            template_views = env.get_template("django_views_class.txt.jinja")
             output_views = template_views.render(names=model_names)
         except TemplateNotFound:
             raise
@@ -82,6 +80,20 @@ class DjangoCombustionChamber:
             raise RenderFailed(item_name)
         else:
             return (output_views, item_name)
+
+    def render_views_func(self, model_names: List[str]) -> Tuple[str, str]:
+        item_name = "views_func"
+        try:
+            snaked_model_names = [convert_to_snake(name) for name in model_names]
+            paired_names = dict(zip(model_names, snaked_model_names))
+            template_views_func = env.get_template("django_views_func.txt.jinja")
+            output_views_func = template_views_func.render(names=paired_names)
+        except TemplateNotFound:
+            raise
+        except Exception:
+            raise RenderFailed(item_name)
+        else:
+            return (output_views_func, item_name)
 
     def render_serializers(
         self, models: List[DjangoModel], model_names: List[str]
@@ -99,12 +111,12 @@ class DjangoCombustionChamber:
         else:
             return (output_serializers, item_name)
 
-    def render_urls(self, model_names: List[str]) -> Tuple[str, str]:
+    def render_urls_class(self, model_names: List[str]) -> Tuple[str, str]:
         item_name = "urls_class"
         try:
             snaked_model_names = [convert_to_snake(name) for name in model_names]
             paired_names = dict(zip(model_names, snaked_model_names))
-            template_urls = env.get_template("django_urls.txt.jinja")
+            template_urls = env.get_template("django_urls_class.txt.jinja")
             output_urls = template_urls.render(names=paired_names)
         except TemplateNotFound:
             raise
@@ -112,6 +124,19 @@ class DjangoCombustionChamber:
             raise RenderFailed(item_name)
         else:
             return (output_urls, item_name)
+
+    def render_urls_func(self, model_names: List[str]) -> Tuple[str, str]:
+        item_name = "urls_func"
+        try:
+            snaked_model_names = [convert_to_snake(name) for name in model_names]
+            template_urls = env.get_template("django_urls_func.txt.jinja")
+            output_urls_func = template_urls.render(names=snaked_model_names)
+        except TemplateNotFound:
+            raise
+        except Exception:
+            raise RenderFailed(item_name)
+        else:
+            return (output_urls_func, item_name)
 
     def write_to_file(self, item: Any, item_name: str) -> None:
         """Rendered template strings are formatted before writing."""
