@@ -3,7 +3,7 @@ from .views import {% for k,_ in names.items() %}{% if loop.last %}{{ k }}List, 
 
 urlpatterns = [
     {% for k,v in names.items() %}
-    path("/{{ v }}", {{ k }}List.as_view(), name="{{ v }}s"),
-    path("/{{ v }}/<int:pk>", {{ k }}Detail.as_view(), name="{{ v }}"),
+    path("/{{ v }}s", {{ k }}List.as_view(), name="{{ v }}s"),
+    path("/{{ v }}s/<int:pk>", {{ k }}Detail.as_view(), name="{{ v }}"),
     {% endfor %}
 ]
