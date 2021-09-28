@@ -16,7 +16,8 @@ class {{ model.name }}Serializer(serializers.ModelSerializer):
                 {% endif %}
                 {% if field.type == 'ForeignKey' or field.type == 'ManyToManyField' or field.type == 'OneToOneField' %}
                     # {{ field.name|tojson }} not added. It has a {{ field.type }} relationship with {{ field.extras[0]['relation'] }}.
-                    # Add a serializer relation within {{ field.extras[0]['relation'] }}Serializer if needed.
+                    # Add a serializer relation first within {{ field.extras[0]['relation'] }}Serializer
+                    # or in this serializer class if needed.
                 {% endif %}
             {% endfor %}
         ]
