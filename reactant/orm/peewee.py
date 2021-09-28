@@ -1,25 +1,24 @@
 import ipaddress
 import uuid
-
-from typing import Any, Dict, NamedTuple, List, Sequence
-from pydantic.fields import ModelField, UndefinedType
-
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
+from typing import Any, Dict, List, NamedTuple, Sequence
+
 from peewee import (
-    CharField,
-    FloatField,
-    BooleanField,
-    IntegerField,
-    DateTimeField,
-    DateField,
-    TimeField,
     BlobField,
+    BooleanField,
+    CharField,
+    DateField,
+    DateTimeField,
     DecimalField,
+    FloatField,
+    IntegerField,
     IPField,
+    TimeField,
     UUIDField,
 )
+from pydantic.fields import ModelField, UndefinedType
 
 
 class FieldOptions(NamedTuple):

@@ -1,6 +1,7 @@
-from typing import Optional
-from reactant import DjangoORM, PeeweeORM, Field, generate
 from datetime import date
+from typing import Optional
+
+from reactant import DjangoORM, Field, PeeweeORM, generate
 
 
 class RocketEngine(DjangoORM):

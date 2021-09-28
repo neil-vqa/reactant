@@ -1,22 +1,15 @@
-from reactant.orm.peewee import PeeweeModel, PeeweeCombustor
-from reactant.main import PeeweeORM
-from reactant.utils import convert_to_snake
-from reactant.exceptions import RenderFailed
+from pathlib import Path
+from typing import Any, Iterable, List, Tuple, Type
 
-from typing import (
-    Any,
-    Iterable,
-    List,
-    Tuple,
-    Type,
-)
-
+from black import FileMode, format_str
+from click import secho
 from jinja2 import Environment, PackageLoader
 from jinja2.exceptions import TemplateNotFound
-from black import format_str, FileMode
-from click import secho
-from pathlib import Path
 
+from reactant.exceptions import RenderFailed
+from reactant.main import PeeweeORM
+from reactant.orm.peewee import PeeweeCombustor, PeeweeModel
+from reactant.utils import convert_to_snake
 
 env = Environment(
     loader=PackageLoader("reactant"),

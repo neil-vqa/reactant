@@ -1,12 +1,10 @@
 import ipaddress
 import uuid
-
-from typing import Any, Dict, NamedTuple, List, Sequence, Tuple, Type
-from pydantic.fields import ModelField, UndefinedType
-
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
+from typing import Any, Dict, List, NamedTuple, Sequence, Tuple, Type
+
 from django.db.models import (
     BinaryField,
     BooleanField,
@@ -21,6 +19,7 @@ from django.db.models import (
     TimeField,
     UUIDField,
 )
+from pydantic.fields import ModelField, UndefinedType
 
 
 class FieldOptions(NamedTuple):

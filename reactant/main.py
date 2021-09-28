@@ -1,10 +1,7 @@
-from pydantic import BaseModel
+from typing import Any, List, Tuple
+
 from click import secho
-from typing import (
-    Any,
-    List,
-    Tuple,
-)
+from pydantic import BaseModel
 
 
 class Reactant(BaseModel):
