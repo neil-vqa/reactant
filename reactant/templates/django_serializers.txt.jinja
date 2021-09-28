@@ -7,10 +7,16 @@ class {{ model.name }}Serializer(serializers.ModelSerializer):
         model = {{ model.name }}
         fields = [
             {% for field in model.fields %}
-                {% if loop.last %}
-                {{ field.name|tojson }}
-                {% else %}
-                {{ field.name|tojson }},
+                {% if not field.type == 'ForeignKey' or field.type == 'ManyToManyField' or field.type == 'OneToOneField' %}
+                    {% if loop.last %}
+                    {{ field.name|tojson }}
+                    {% else %}
+                    {{ field.name|tojson }},
+                    {% endif %}
+                {% endif %}
+                {% if field.type == 'ForeignKey' or field.type == 'ManyToManyField' or field.type == 'OneToOneField' %}
+                    # {{ field.name|tojson }} not added. It has a {{ field.type }} relationship with {{ field.extras[0]['relation'] }}.
+                    # Add a serializer relation within {{ field.extras[0]['relation'] }}Serializer if needed.
                 {% endif %}
             {% endfor %}
         ]
