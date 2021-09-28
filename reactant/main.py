@@ -39,7 +39,7 @@ def generate() -> None:
     according to the selected Reactant subclass.
     """
 
-    dj_classes, alchemy_classes, peewee_classes = classify_reactants()
+    dj_classes, _, peewee_classes = classify_reactants()
     base_directory = "reactant_products"
 
     if dj_classes:
