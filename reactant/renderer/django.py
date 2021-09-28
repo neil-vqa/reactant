@@ -40,6 +40,7 @@ class DjangoCombustionChamber:
         return models
 
     def render_manager(self) -> None:
+        """Invokes render_* methods then pass the rendered template strings to writing the file."""
         try:
             models = self.get_models()
             model_names = [model.name for model in models]
@@ -113,6 +114,7 @@ class DjangoCombustionChamber:
             return (output_urls, item_name)
 
     def write_to_file(self, item: Any, item_name: str) -> None:
+        """Rendered template strings are formatted before writing."""
         try:
             p = Path("reactant_products/django")
             p.mkdir(parents=True, exist_ok=True)
