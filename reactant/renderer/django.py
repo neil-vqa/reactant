@@ -33,27 +33,35 @@ class DjangoCombustionChamber:
                 raise
         return models
 
-    def render_manager(self) -> None:
+    def render_manager(
+        self, class_based: bool = True, function_based: bool = True
+    ) -> None:
         """Invokes render_* methods then pass the rendered template strings to writing the file."""
         try:
             models = self.get_models()
             model_names = [model.name for model in models]
 
             models_code, models_name_str = self.render_models(models)
-            views_code, views_name_str = self.render_views_class(model_names)
-            views_func_code, views_func_name_str = self.render_views_func(model_names)
             serializers_code, serializers_name_str = self.render_serializers(
                 models, model_names
             )
-            urls_code, urls_name_str = self.render_urls_class(model_names)
-            urls_func_code, urls_func_name_str = self.render_urls_func(model_names)
-
             self.write_to_file(models_code, models_name_str)
-            self.write_to_file(views_code, views_name_str)
-            self.write_to_file(views_func_code, views_func_name_str)
             self.write_to_file(serializers_code, serializers_name_str)
-            self.write_to_file(urls_code, urls_name_str)
-            self.write_to_file(urls_func_code, urls_func_name_str)
+
+            if class_based:
+                views_code, views_name_str = self.render_views_class(model_names)
+                urls_code, urls_name_str = self.render_urls_class(model_names)
+                self.write_to_file(views_code, views_name_str)
+                self.write_to_file(urls_code, urls_name_str)
+
+            if function_based:
+                views_func_code, views_func_name_str = self.render_views_func(
+                    model_names
+                )
+                urls_func_code, urls_func_name_str = self.render_urls_func(model_names)
+                self.write_to_file(views_func_code, views_func_name_str)
+                self.write_to_file(urls_func_code, urls_func_name_str)
+
         except Exception:
             raise
 
