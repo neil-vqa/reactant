@@ -32,7 +32,7 @@ def classify_reactants() -> Tuple[List[Any], ...]:
     return (dj_classes, alchemy_classes, peewee_classes)
 
 
-def generate() -> None:
+def generate(class_based: bool = True, function_based: bool = True) -> None:
     """
     Deliver Reactant models to appropriate CombustionChamber.
     CombustionChamber classes contain methods for rendering specific files
@@ -48,7 +48,9 @@ def generate() -> None:
 
             secho(f"Found {len(dj_classes)} Django reactants.", fg="blue")
             dj_rxn = DjangoCombustionChamber(dj_classes)
-            dj_rxn.render_manager()
+            dj_rxn.render_manager(
+                class_based=class_based, function_based=function_based
+            )
         except Exception:
             secho(f"Sorry. Something went wrong rendering Django files.", fg="red")
             raise
