@@ -21,7 +21,7 @@ from peewee import (
 from pydantic.fields import ModelField, UndefinedType
 
 
-class FieldOptions(NamedTuple):
+class PeeweeModelField(NamedTuple):
     name: str
     type: str
     extras: List[Dict[Any, Any]]
@@ -29,10 +29,15 @@ class FieldOptions(NamedTuple):
 
 class PeeweeModel(NamedTuple):
     name: str
-    fields: List[FieldOptions]
+    fields: List[PeeweeModelField]
 
 
 class PeeweeCombustor:
+    """
+    This class contains methods in creating a PeeweeModel tuple
+    to be used by jinja templates to render the Peewee models.
+    """
+
     valid_arguments: List[str] = [
         # general
         "null",
@@ -76,7 +81,8 @@ class PeeweeCombustor:
         return model
 
     @classmethod
-    def _get_columns(cls, reactant) -> List[FieldOptions]:
+    def _get_columns(cls, reactant) -> List[PeeweeModelField]:
+        """Builds the list of fields for a model."""
         column_list = []
         for name, value in reactant.__fields__.items():
             column_type = cls._map_type_to_orm_field(value)
@@ -84,7 +90,7 @@ class PeeweeCombustor:
                 column_type, value
             )
 
-            column_info = FieldOptions(
+            column_info = PeeweeModelField(
                 name=name, type=column_type_final.__name__, extras=extras_list
             )
             column_list.append(column_info)
@@ -125,17 +131,18 @@ class PeeweeCombustor:
     @classmethod
     def _filter_field_arguments(cls, column_type: Any, value: Any) -> Sequence[Any]:
         """
-        This will filter out options that are not valid for the given Field type,
-        and set defaults for required arguments that are not specified by the reactant model.
+        This will filter out arguments that are not valid for Peewee model fields,
+        and set defaults for required arguments that are not explicitly set in the reactant model.
         """
 
+        # actual filtering of the arguments
         new_extra_options = {
             k: value.field_info.extra[k]
             for k in cls.valid_arguments
             if k in value.field_info.extra
         }
 
-        extras_list = []
+        extras_list = []  # holds the arguments for the given field
 
         if not issubclass(type(value.field_info.default), UndefinedType):
             extras_list.append({"default": value.field_info.default})

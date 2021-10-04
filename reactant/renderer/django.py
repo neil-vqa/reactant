@@ -18,7 +18,7 @@ env = Environment(
 
 
 class DjangoCombustionChamber:
-    """For rendering Reactant models that are DjangoORM subclasses."""
+    """This class contains methods for rendering the files. Processes DjangoORM subclasses."""
 
     def __init__(self, reactants: List[Type[DjangoORM]]) -> None:
         self.reactants = reactants

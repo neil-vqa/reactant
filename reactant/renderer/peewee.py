@@ -18,7 +18,7 @@ env = Environment(
 
 
 class PeeweeCombustionChamber:
-    """For rendering Reactant models that are PeeweeORM subclasses."""
+    """This class contains methods for rendering the files. Processes PeeweeORM subclasses."""
 
     def __init__(self, reactants: List[Type[PeeweeORM]]) -> None:
         self.reactants = reactants
