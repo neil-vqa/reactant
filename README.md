@@ -54,19 +54,19 @@ from datetime import date
 
 
 class RocketEngine(DjangoORM):
-    name: str = Field(max_length=32, title="engine_name")
+    name: str = Field(max_length=32, title="engine_name") # adding additional arguments
     manufacturer: Optional[str]
-    power_cycle: Optional[str] = "gas-generator"
+    power_cycle: Optional[str] = "gas-generator" # setting a default
     thrust_weight_ratio: Optional[int] = None
 
 
 class LaunchVehicle(DjangoORM):
     name: str = Field(max_length=32)
-    country: str = Field("USA", max_length=32)
+    country: str = Field("USA", max_length=32) # setting a default in the Field function 
     status: str
     total_launches: Optional[int]
     first_flight: Optional[date]
-    engine: str = Field(foreign_key="RocketEngine")
+    engine: str = Field(foreign_key="RocketEngine") # specifying a relationship field
 
 # Don't forget this block.
 if __name__ == "__main__":
@@ -130,6 +130,8 @@ Relationship fields can be specified by giving the *reactant* `Field` special ar
 - `foreign_key` - identifies a foreign key
 - `many_key` - identifies a many-to-many
 - `one_key` - identifies a one-to-one
+
+The [Get Started](#get-started) section shows an example of specifying a relationship.
 
 ## The generate function
 

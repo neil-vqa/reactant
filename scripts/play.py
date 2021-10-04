@@ -11,7 +11,7 @@ class RocketEngine(DjangoORM):
     thrust_weight_ratio: Optional[int] = None
 
 
-class LaunchVehicle(DjangoORM):
+class LaunchVehicle(PeeweeORM):
     name: str = Field(max_length=32)
     country: str = Field("USA", max_length=32)
     status: str
