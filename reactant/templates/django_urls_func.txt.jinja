@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     {% for name in names %}
-    path("/{{ name }}s", views.{{ name }}_list, name="{{ name }}s"),
-    path("/{{ name }}s/<int:pk>", views.{{ name }}_detail, name="{{ name }}"),
+    path("{{ name }}s", views.{{ name }}_list, name="{{ name }}s"),
+    path("{{ name }}s/<int:pk>", views.{{ name }}_detail, name="{{ name }}"),
     {% endfor %}
 ]
