@@ -51,6 +51,11 @@ def generate(class_based: bool = True, function_based: bool = True) -> None:
             dj_rxn.render_manager(
                 class_based=class_based, function_based=function_based
             )
+        except ImportError:
+            secho(
+                "Failed to import django. Please install django to generate django files.",
+                fg="red",
+            )
         except Exception:
             secho(f"Sorry. Something went wrong rendering Django files.", fg="red")
             raise
@@ -69,6 +74,11 @@ def generate(class_based: bool = True, function_based: bool = True) -> None:
             secho(f"Found {len(peewee_classes)} Peewee reactants.", fg="blue")
             pw_rxn = PeeweeCombustionChamber(peewee_classes)
             pw_rxn.render_manager()
+        except ImportError:
+            secho(
+                "Failed to import peewee. Please install peewee to generate peewee files.",
+                fg="red",
+            )
         except Exception:
             secho(f"Sorry. Something went wrong rendering Peewee files.", fg="red")
             raise
