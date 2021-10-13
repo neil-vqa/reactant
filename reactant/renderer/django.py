@@ -4,7 +4,6 @@ from typing import Any, Iterable, List, Tuple, Type
 from black import FileMode, format_str
 from click import secho
 from jinja2 import Environment, PackageLoader
-from jinja2.exceptions import TemplateNotFound
 
 from reactant.exceptions import RenderFailed
 from reactant.main import DjangoORM
@@ -70,8 +69,6 @@ class DjangoCombustionChamber:
         try:
             template_models = env.get_template("django_models.txt.jinja")
             output_models = template_models.render(models=models)
-        except TemplateNotFound:
-            raise
         except Exception:
             raise RenderFailed(item_name)
         else:
@@ -82,8 +79,6 @@ class DjangoCombustionChamber:
         try:
             template_views = env.get_template("django_views_class.txt.jinja")
             output_views = template_views.render(names=model_names)
-        except TemplateNotFound:
-            raise
         except Exception:
             raise RenderFailed(item_name)
         else:
@@ -96,8 +91,6 @@ class DjangoCombustionChamber:
             paired_names = dict(zip(model_names, snaked_model_names))
             template_views_func = env.get_template("django_views_func.txt.jinja")
             output_views_func = template_views_func.render(names=paired_names)
-        except TemplateNotFound:
-            raise
         except Exception:
             raise RenderFailed(item_name)
         else:
@@ -112,8 +105,6 @@ class DjangoCombustionChamber:
             output_serializers = template_serializers.render(
                 models=models, names=model_names
             )
-        except TemplateNotFound:
-            raise
         except Exception:
             raise RenderFailed(item_name)
         else:
@@ -126,8 +117,6 @@ class DjangoCombustionChamber:
             paired_names = dict(zip(model_names, snaked_model_names))
             template_urls = env.get_template("django_urls_class.txt.jinja")
             output_urls = template_urls.render(names=paired_names)
-        except TemplateNotFound:
-            raise
         except Exception:
             raise RenderFailed(item_name)
         else:
@@ -139,8 +128,6 @@ class DjangoCombustionChamber:
             snaked_model_names = [convert_to_snake(name) for name in model_names]
             template_urls = env.get_template("django_urls_func.txt.jinja")
             output_urls_func = template_urls.render(names=snaked_model_names)
-        except TemplateNotFound:
-            raise
         except Exception:
             raise RenderFailed(item_name)
         else:

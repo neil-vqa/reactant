@@ -4,12 +4,10 @@ from typing import Any, Iterable, List, Tuple, Type
 from black import FileMode, format_str
 from click import secho
 from jinja2 import Environment, PackageLoader
-from jinja2.exceptions import TemplateNotFound
 
 from reactant.exceptions import RenderFailed
 from reactant.main import PeeweeORM
 from reactant.orm.peewee import PeeweeCombustor, PeeweeModel
-from reactant.utils import convert_to_snake
 
 env = Environment(
     loader=PackageLoader("reactant"),
@@ -53,8 +51,6 @@ class PeeweeCombustionChamber:
         try:
             template_models = env.get_template("peewee_models.txt.jinja")
             output_models = template_models.render(models=models, fields_set=fields_set)
-        except TemplateNotFound:
-            raise
         except Exception:
             raise RenderFailed(item_name)
         else:
