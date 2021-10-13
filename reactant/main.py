@@ -78,12 +78,16 @@ def generate_peewee(peewee_classes, base_directory) -> None:
         )
 
 
+def generate_sqla() -> None:
+    pass
+
+
 def generate(class_based: bool = True, function_based: bool = True) -> None:
     """
     Deliver Reactant models to appropriate "generators".
     """
 
-    dj_classes, _, peewee_classes = classify_reactants()
+    dj_classes, alchemy_classes, peewee_classes = classify_reactants()
     base_directory = "reactant_products"
 
     if dj_classes:
@@ -95,3 +99,8 @@ def generate(class_based: bool = True, function_based: bool = True) -> None:
         generate_peewee(peewee_classes, base_directory)
     else:
         secho("No Peewee reactants found.", fg="blue")
+
+    if alchemy_classes:
+        generate_sqla()
+    else:
+        secho("No SQLAlchemy reactants found.", fg="blue")
