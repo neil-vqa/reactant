@@ -40,6 +40,23 @@ class SQLAlchemyCombustor:
     to be used by jinja templates to render the SQLAlchemy models.
     """
 
+    valid_arguments: List[str] = [
+        "default",
+        "doc",
+        "key",
+        "index",
+        "info",
+        "nullable",
+        "onupdate",
+        "primary_key",
+        "server_default",
+        "server_onupdate",
+        "quote",
+        "unique",
+        "system",
+        "comment",
+    ]
+
     @classmethod
     def generate_sqla_orm_models(cls, reactant) -> SQLAlchemyModel:
         table_name = reactant.__name__
