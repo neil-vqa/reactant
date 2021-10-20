@@ -5,7 +5,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple, Sequence
 
-from pydantic.fields import ModelField
+from pydantic.fields import ModelField, UndefinedType
 from sqlalchemy import (
     Boolean,
     Date,
@@ -21,6 +21,7 @@ from sqlalchemy import (
     Time,
 )
 from sqlalchemy.dialects.postgresql import UUID
+from reactant.utils import convert_to_snake
 
 
 class SQLAlchemyModelField(NamedTuple):
@@ -55,6 +56,7 @@ class SQLAlchemyCombustor:
         "unique",
         "system",
         "comment",
+        "foreign_key",
     ]
 
     @classmethod
@@ -125,4 +127,39 @@ class SQLAlchemyCombustor:
         and sets defaults for required argumenta that are not explicitly set in the reactant model.
         """
 
-        pass
+        # actual filtering of arguments
+        new_extra_options = {
+            k: value.field_info.extra[k]
+            for k in cls.valid_arguments
+            if k in value.field_info.extra
+        }
+
+        extras_list: List[Dict[str, Any]] = []
+
+        if not issubclass(type(value.field_info.default), UndefinedType):
+            extras_list.append({"default": value.field_info.default})
+        if value.required == False:
+            extras_list.append({"nullable": True})
+        if new_extra_options:
+            for k, v in new_extra_options.items():
+                if k == "foreign_key":
+                    column_type = ForeignKey
+                else:
+                    extras_list.append({f"{k}": v})
+
+        if column_type.__name__ == "ForeignKey":
+            extras_list.insert(
+                0,
+                {
+                    "column_type": {
+                        "relation": "ForeignKey",
+                        "value": v,
+                    }
+                },
+            )
+        elif column_type.__name__ == "String":
+            extras_list.insert(0, {"String": value.field_info.max_length})
+        else:
+            extras_list.insert(0, {"column_type": column_type.__name__})
+
+        return (column_type, extras_list)

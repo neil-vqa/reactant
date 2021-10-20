@@ -1,0 +1,43 @@
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, {% for field in fields_set %}{% if loop.last %}{{ field }}{% else %}{{ field }},{% endif %}{% endfor %}
+
+Base = declarative_base()
+
+{% for model in models %}
+class {{model.name}}(Base):
+    __tablename__ = "{{ convert_to_snake(model.name) }}"
+
+{% for field in model.fields %}
+    {{ field.name }} = Column(
+        {% for option in field.extras %}
+            {% if loop.last %}
+                {% for k, v in option.items() %}
+                    {% if k == "column_type" %}
+                        {% if "relation" in v %}{{ v["relation"] }}({{ "{}.id".format(convert_to_snake(v["value"]))|tojson }})
+                        # To map the relation, add the following line to {{v["value"]}} class:
+                        # {{ convert_to_snake(model.name) }}s = relationship("{{ model.name }}", backref={{ convert_to_snake(v["value"])|tojson }}) 
+                        {% else %}
+                        {{ v }}
+                        {% endif %}
+                    {% elif k == "String" %}
+                        {{ k }}{% if not v == None  %}({{v}}){% endif %}
+                    {% else %}
+                        {{ k }}={% if v is string %}{{ v|tojson }}{% else %}{{ v }}{% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for k, v in option.items() %}
+                    {% if k == "column_type" %}
+                        {{ v }},
+                    {% elif k == "String" %}
+                        {{ k }}{% if not v == None %}({{v}}){% endif %},
+                    {% else %}
+                        {{ k }}={% if v is string %}{{ v|tojson }},{% else %}{{ v }},{% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %})
+{% endfor %}
+
+
+{% endfor %}

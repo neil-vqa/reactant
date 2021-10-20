@@ -78,8 +78,27 @@ def generate_peewee(peewee_classes, base_directory) -> None:
         )
 
 
-def generate_sqla() -> None:
-    pass
+def generate_sqla(alchemy_classes, base_directory) -> None:
+    try:
+        from reactant.renderer.sqla import SQLAlchemyCombustionChamber
+
+        # SQLAlchemyCombustionChamber class contains methods for generating the files.
+        secho(f"Found {len(alchemy_classes)} SQLAlchemy reactants.", fg="blue")
+        pw_rxn = SQLAlchemyCombustionChamber(alchemy_classes)
+        pw_rxn.render_manager()
+    except ImportError:
+        secho(
+            "Failed to import sqlalchemy. Please install sqlalchemy to generate peewee files.",
+            fg="red",
+        )
+    except Exception:
+        secho(f"Sorry. Something went wrong rendering SQLAlchemy files.", fg="red")
+        raise
+    else:
+        secho(
+            f'Success! Please check "{base_directory}/sqla" directory.',
+            fg="cyan",
+        )
 
 
 def generate(class_based: bool = True, function_based: bool = True) -> None:
@@ -101,6 +120,6 @@ def generate(class_based: bool = True, function_based: bool = True) -> None:
         secho("No Peewee reactants found.", fg="blue")
 
     if alchemy_classes:
-        generate_sqla()
+        generate_sqla(alchemy_classes, base_directory)
     else:
         secho("No SQLAlchemy reactants found.", fg="blue")

@@ -1,17 +1,17 @@
 from datetime import date
 from typing import Optional
 
-from reactant import DjangoORM, Field, PeeweeORM, generate
+from reactant import DjangoORM, Field, PeeweeORM, generate, SQLAlchemyORM
 
 
-class RocketEngine(DjangoORM):
+class RocketEngine(SQLAlchemyORM):
     name: str = Field(max_length=32, title="engine_name")
     manufacturer: Optional[str]
     power_cycle: Optional[str] = "gas-generator"
     thrust_weight_ratio: Optional[int] = None
 
 
-class LaunchVehicle(PeeweeORM):
+class LaunchVehicle(SQLAlchemyORM):
     name: str = Field(max_length=32)
     country: str = Field("USA", max_length=32)
     status: str
