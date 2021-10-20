@@ -21,8 +21,12 @@ class {{model.name}}(Base):
                 {% for k, v in option.items() %}
                     {% if k == "column_type" %}
                         {% if "relation" in v %}Integer, {{ v["relation"] }}({{ "{}.id".format(convert_to_snake(v["value"]))|tojson }})
-                        # To establish the relationship, add the following line to {{v["value"]}} class:
+                        # To establish a One To Many relationship relationship, add the following line to {{v["value"]}} class:
                         # {{ convert_to_snake(model.name) }}s = relationship("{{ model.name }}", backref={{ convert_to_snake(v["value"])|tojson }}) 
+                        # And rename this field to {{ field.name }}_id if necessary.
+                        #
+                        # For a Many to One, add the following to this class:
+                        # {{ convert_to_snake(v["value"]) }} = relationship({{v["value"]|tojson}}, backref="{{ convert_to_snake(model.name) }}s")
                         # And rename this field to {{ field.name }}_id if necessary.
                         {% else %}
                         {{ v }}

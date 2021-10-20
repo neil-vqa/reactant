@@ -17,7 +17,7 @@ class LaunchVehicle(SQLAlchemyORM):
     status: str
     total_launches: Optional[int]
     first_flight: Optional[date]
-    engine: str = Field(
+    rocket_engine: str = Field(
         related_name="vehicle",
         foreign_key="RocketEngine",
     )
