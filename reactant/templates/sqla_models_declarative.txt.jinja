@@ -1,5 +1,11 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, {% for field in fields_set %}{% if loop.last %}{{ field }}{% else %}{{ field }},{% endif %}{% endfor %}
+from sqlalchemy import Column, Integer, {% for field in fields_set %}
+    {% if loop.last %}
+        {% if not field == "Integer" %}{{ field }}{% endif %}
+    {% else %}
+        {% if not field == "Integer" %}{{ field }},{% endif %}
+    {% endif %}
+{% endfor %}
 
 Base = declarative_base()
 
@@ -7,6 +13,7 @@ Base = declarative_base()
 class {{model.name}}(Base):
     __tablename__ = "{{ convert_to_snake(model.name) }}"
 
+    id = Column(Integer, primary_key=True)
 {% for field in model.fields %}
     {{ field.name }} = Column(
         {% for option in field.extras %}
@@ -14,7 +21,7 @@ class {{model.name}}(Base):
                 {% for k, v in option.items() %}
                     {% if k == "column_type" %}
                         {% if "relation" in v %}{{ v["relation"] }}({{ "{}.id".format(convert_to_snake(v["value"]))|tojson }})
-                        # To map the relation, add the following line to {{v["value"]}} class:
+                        # To establish the relationship, add the following line to {{v["value"]}} class:
                         # {{ convert_to_snake(model.name) }}s = relationship("{{ model.name }}", backref={{ convert_to_snake(v["value"])|tojson }}) 
                         {% else %}
                         {{ v }}
