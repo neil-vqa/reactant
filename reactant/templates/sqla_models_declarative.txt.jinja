@@ -20,9 +20,10 @@ class {{model.name}}(Base):
             {% if loop.last %}
                 {% for k, v in option.items() %}
                     {% if k == "column_type" %}
-                        {% if "relation" in v %}{{ v["relation"] }}({{ "{}.id".format(convert_to_snake(v["value"]))|tojson }})
+                        {% if "relation" in v %}Integer, {{ v["relation"] }}({{ "{}.id".format(convert_to_snake(v["value"]))|tojson }})
                         # To establish the relationship, add the following line to {{v["value"]}} class:
                         # {{ convert_to_snake(model.name) }}s = relationship("{{ model.name }}", backref={{ convert_to_snake(v["value"])|tojson }}) 
+                        # And rename this field to {{ field.name }}_id if necessary.
                         {% else %}
                         {{ v }}
                         {% endif %}
