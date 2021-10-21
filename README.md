@@ -12,7 +12,9 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 
 *reactant* currently generates code for the following:
 
-**Django REST** (in Django's *default* project structure i.e. by *apps*) - Django 3+, DRF 3.12+
+**Django REST** (Django 3+, DRF 3.12+)
+
+(in Django's *default* project structure i.e. by *apps*)
 
 - [X] models
 - [X] views (class-based API views, filename=*views_class.py*)
@@ -21,16 +23,18 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 - [X] urls (from class-based API views, filename=*urls_class.py*)
 - [X] urls (from function-based API views, filename=*urls_func.py*)
 
-**Flask** - Flask 2+
+**Flask** (Flask 2+)
 
-- [ ] models (Flask-SQLAlchemy)
+(package structure, for building REST APIs)
 
-**SQLAlchemy** - SQLAlchemy 1.4+
+- [ ] views
 
-- [X] models in Declarative Mapping
-- [X] models in Classical Mapping
+**SQLAlchemy** (SQLAlchemy 1.4+)
 
-**Peewee** Peewee 3.14+
+- [X] classes mapped by Declarative Mapping
+- [X] classes mapped by Classical Mapping
+
+**Peewee** (Peewee 3.14+)
 
 - [X] models
 

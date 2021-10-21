@@ -1,11 +1,13 @@
 from pathlib import Path
 from typing import Optional
 
-from reactant import DjangoORM, Field, PeeweeORM, __version__, generate
+from reactant import DjangoORM, Field, PeeweeORM, __version__, generate, SQLAlchemyORM
 from reactant.orm.django import DjangoModel
 from reactant.orm.peewee import PeeweeModel
+from reactant.orm.sqla import SQLAlchemyModel
 from reactant.renderer.django import DjangoCombustionChamber
 from reactant.renderer.peewee import PeeweeCombustionChamber
+from reactant.renderer.sqla import SQLAlchemyCombustionChamber
 
 
 def test_version():
@@ -99,3 +101,43 @@ class TestPeewee:
         assert models.is_file()
 
         models.unlink()
+
+
+class TestSQLAlchemy:
+    def test_sqla_combustion_chamber_get_models_method_return_sqlamodels(self):
+        class RocketEngine(SQLAlchemyORM):
+            id: int = Field(primary_key=True, title="rocket_id")
+            name: str = Field(max_length=32)
+            manufacturer: str = Field(max_length=64)
+            power_cycle: Optional[str] = Field(
+                "gas-generator", nullable=True, blank=True, max_length=32
+            )
+            thrust_weight_ratio: int
+
+        combust = SQLAlchemyCombustionChamber([RocketEngine])
+        models = combust.get_models()
+
+        assert isinstance(models, list)
+        assert isinstance(models[0], SQLAlchemyModel)
+
+    def test_generate_sqla_files_success(self):
+        class RocketEngine(SQLAlchemyORM):
+            id: int = Field(primary_key=True, title="rocket_id")
+            name: str = Field(max_length=32)
+            manufacturer: str = Field(max_length=64)
+            power_cycle: Optional[str] = Field(
+                "gas-generator", nullable=True, blank=True, max_length=32
+            )
+            thrust_weight_ratio: int
+
+        generate()
+
+        p = "reactant_products/sqla"
+        declarative_models = Path(f"{p}/declarative_models.py")
+        classical_models = Path(f"{p}/classical_models.py")
+
+        assert declarative_models.is_file()
+        assert classical_models.is_file()
+
+        declarative_models.unlink()
+        classical_models.unlink()
