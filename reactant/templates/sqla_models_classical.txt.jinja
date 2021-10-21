@@ -1,0 +1,63 @@
+from sqlalchemy.orm import registry
+from sqlalchemy import Table, Column, Integer, {% for field in fields_set %}
+    {% if loop.last %}
+        {% if not field == "Integer" %}{{ field }}{% endif %}
+    {% else %}
+        {% if not field == "Integer" %}{{ field }},{% endif %}
+    {% endif %}
+{% endfor %}
+
+mapper_registry = registry()
+
+{% for model in models %}
+class {{model.name}}:
+    pass
+{% endfor %}
+
+{% for model in models %}
+{{convert_to_snake(model.name)}}_table = Table(
+    {{convert_to_snake(model.name)|tojson}},
+    mapper_registry.metadata,
+    Column('id', Integer, primary_key=True),
+{% for field in model.fields %}
+     Column(
+    {{ field.name|tojson }},
+    {% for option in field.extras %}
+        {% if loop.last %}
+            {% for k, v in option.items() %}
+                {% if k == "column_type" %}
+                    {% if "relation" in v %}Integer, {{ v["relation"] }}({{ "{}.id".format(convert_to_snake(v["value"]))|tojson }})
+                    # ForeignKey detected. To establish a relationship, add this 'properties' dictionary as the third argument 
+                    # when mapping by mapper_registry.map_imperatively({{v["value"]}}, {{convert_to_snake(v["value"])}}_table, properties={...}).
+                    # 
+                    # properties={"{{convert_to_snake(model.name)}}s" : relationship({{model.name}}, backref={{convert_to_snake(v["value"])|tojson}})}
+                    {% else %}
+                    {{ v }}
+                    {% endif %}
+                {% elif k == "String" %}
+                    {{ k }}{% if not v == None  %}({{v}}){% endif %}
+                {% else %}
+                    {{ k }}={% if v is string %}{{ v|tojson }}{% else %}{{ v }}{% endif %}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% for k, v in option.items() %}
+                {% if k == "column_type" %}
+                    {{ v }},
+                {% elif k == "String" %}
+                    {{ k }}{% if not v == None %}({{v}}){% endif %},
+                {% else %}
+                    {{ k }}={% if v is string %}{{ v|tojson }},{% else %}{{ v }},{% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    ),
+{% endfor %}
+)
+
+{% endfor %}
+
+{% for model in models %}
+mapper_registry.map_imperatively({{model.name}}, {{convert_to_snake(model.name)}}_table)
+{% endfor %}

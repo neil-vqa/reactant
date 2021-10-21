@@ -1,0 +1,61 @@
+from sqlalchemy.orm import declarative_base, relationship, backref
+from sqlalchemy import Column, Integer, {% for field in fields_set %}
+    {% if loop.last %}
+        {% if not field == "Integer" %}{{ field }}{% endif %}
+    {% else %}
+        {% if not field == "Integer" %}{{ field }},{% endif %}
+    {% endif %}
+{% endfor %}
+
+Base = declarative_base()
+
+{% for model in models %}
+class {{model.name}}(Base):
+    __tablename__ = "{{ convert_to_snake(model.name) }}"
+
+    id = Column(Integer, primary_key=True)
+{% for field in model.fields %}
+    {{ field.name }} = Column(
+        {% for option in field.extras %}
+            {% if loop.last %}
+                {% for k, v in option.items() %}
+                    {% if k == "column_type" %}
+                        {% if "relation" in v %}Integer, {{ v["relation"] }}({{ "{}.id".format(convert_to_snake(v["value"]))|tojson }})
+                        # ForeignKey detected. To establish a One To Many relationship with {{v["value"]}} as the parent, 
+                        # add the following line to {{v["value"]}} class:
+                        # {{ convert_to_snake(model.name) }}s = relationship("{{ model.name }}", backref={{ convert_to_snake(v["value"])|tojson }}) 
+                        # And rename this ForeignKey field to {{ field.name }}_id if necessary.
+                        #
+                        # For a Many to One with {{model.name}} as the parent, add the following to {{model.name}} class:
+                        # {{ convert_to_snake(v["value"]) }} = relationship({{v["value"]|tojson}}, backref="{{ convert_to_snake(model.name) }}s")
+                        # And rename this ForeignKey field to {{ field.name }}_id if necessary.
+                        # 
+                        # For a One to One assuming {{v["value"]}} as a parent, you can use the backref function for the backref parameter.
+                        # Add the following to this class:
+                        # {{ convert_to_snake(v["value"]) }} = relationship({{v["value"]|tojson}}, backref=backref("{{ convert_to_snake(model.name) }}", uselist=False))
+                        # And rename this ForeignKey field to {{ field.name }}_id if necessary.
+                        {% else %}
+                        {{ v }}
+                        {% endif %}
+                    {% elif k == "String" %}
+                        {{ k }}{% if not v == None  %}({{v}}){% endif %}
+                    {% else %}
+                        {{ k }}={% if v is string %}{{ v|tojson }}{% else %}{{ v }}{% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for k, v in option.items() %}
+                    {% if k == "column_type" %}
+                        {{ v }},
+                    {% elif k == "String" %}
+                        {{ k }}{% if not v == None %}({{v}}){% endif %},
+                    {% else %}
+                        {{ k }}={% if v is string %}{{ v|tojson }},{% else %}{{ v }},{% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %})
+{% endfor %}
+
+
+{% endfor %}

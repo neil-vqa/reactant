@@ -12,7 +12,9 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 
 *reactant* currently generates code for the following:
 
-**Django REST** (in Django's *default* project structure i.e. by *apps*)
+**Django REST** (Django 3+, DRF 3.12+)
+
+(in Django's *default* project structure i.e. by *apps*)
 
 - [X] models
 - [X] views (class-based API views, filename=*views_class.py*)
@@ -21,15 +23,18 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 - [X] urls (from class-based API views, filename=*urls_class.py*)
 - [X] urls (from function-based API views, filename=*urls_func.py*)
 
-**Flask**
+**Flask** (Flask 2+)
 
-- [ ] models (Flask-SQLAlchemy)
+(package structure, for building REST APIs)
 
-**SQLAlchemy**
+- [ ] views
 
-- [ ] models in Declarative Mapping
+**SQLAlchemy** (SQLAlchemy 1.4+)
 
-**Peewee**
+- [X] classes mapped by Declarative Mapping
+- [X] classes mapped by Classical Mapping
+
+**Peewee** (Peewee 3.14+)
 
 - [X] models
 
@@ -100,18 +105,10 @@ Success! Please check "reactant_products/django" directory.
 
 ### Django REST
 
-<div>
-    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_01n.png" width="auto">
-</div>
-<div>
-    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_02n_2.png" width="auto">
-</div>
-<div>
-    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_03n_2.png" width="auto">
-</div>
-<div>
-    <img src="https://raw.githubusercontent.com/neil-vqa/reactant/main/screenshots/dj_04n.png" width="auto">
-</div>
+![dj_shot_01](screenshots/dj_01n.png)
+![dj_shot_02](screenshots/dj_02n_2.png)
+![dj_shot_03](screenshots/dj_03n_2.png)
+![dj_shot_04](screenshots/dj_04n.png)
 
 ## The Field function
 
@@ -131,7 +128,17 @@ Relationship fields can be specified by giving the *reactant* `Field` special ar
 - `many_key` - identifies a many-to-many
 - `one_key` - identifies a one-to-one
 
-The [Get Started](#get-started) section shows an example of specifying a relationship.
+These behave differently for each framework. The [Get Started](#get-started) section shows an example of specifying a relationship.
+
+**Django REST**: Models inheriting from `DjangoORM` can use `foreign_key`, `many_key`, and `one_key` to establish relationships. The [Get Started](#get-started) section shows a `DjangoORM` example.
+
+**SQLAlchemy**: *reactant* aims not to introduce anything new except having knowledge of type hints and pydantic. It was hard to capture and generate SQLAlchemy relationships without introducing new *reactant* concepts due to SQLAlchemy's flexibility. Nevertheless, relationship code are still generated and you are given options as to what relationship you intend to build.
+
+Currently, only the `foreign_key` parameter is available for establishing relationships. You may put the `Field` function with this parameter to any of your classes since the generated code will provide options for your intended relationship: One-to-Many, Many-to-One, One-to-One. Using `SQLAlchemyORM` for the reactant models in [Get Started](#get-started) section, the following code is generated:
+
+![sqla_rel_01](screenshots/sqla_01n2.png)
+
+**Peewee**: *reactant* models with `PeeweeORM` can use `foreign_key` parameter.
 
 ## The generate function
 
