@@ -88,7 +88,7 @@ def generate_sqla(alchemy_classes, base_directory) -> None:
         pw_rxn.render_manager()
     except ImportError:
         secho(
-            "Failed to import sqlalchemy. Please install sqlalchemy to generate peewee files.",
+            "Failed to import sqlalchemy. Please install sqlalchemy to generate the files.",
             fg="red",
         )
     except Exception:

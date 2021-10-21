@@ -19,7 +19,7 @@ mypy = "^0.910"
 Django = "^3.2.7"
 isort = "^5.9.3"
 peewee = "^3.14.4"
-SQLAlchemy = "^1.4.25"
+SQLAlchemy = "^1.4.26"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
