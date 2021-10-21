@@ -1,5 +1,4 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import declarative_base, relationship, backref
 from sqlalchemy import Column, Integer, {% for field in fields_set %}
     {% if loop.last %}
         {% if not field == "Integer" %}{{ field }}{% endif %}
