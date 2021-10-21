@@ -43,21 +43,40 @@ class SQLAlchemyCombustionChamber:
         dec_models_code, dec_name_str = self.render_declarative_models(
             models, fields_set
         )
+        clas_models_code, clas_name_str = self.render_classical_models(
+            models, fields_set
+        )
+
         self.write_to_file(dec_models_code, dec_name_str)
+        self.write_to_file(clas_models_code, clas_name_str)
 
     def render_declarative_models(
         self, models: List[SQLAlchemyModel], fields_set: Iterable
     ) -> Tuple[str, str]:
         item_name = "declarative_models"
         try:
-            template_urls = env.get_template("sqla_models_declarative.txt.jinja")
-            output_dec_models = template_urls.render(
+            template_mod = env.get_template("sqla_models_declarative.txt.jinja")
+            output_dec_models = template_mod.render(
                 models=models, convert_to_snake=convert_to_snake, fields_set=fields_set
             )
         except Exception:
             raise RenderFailed(item_name)
         else:
             return (output_dec_models, item_name)
+
+    def render_classical_models(
+        self, models: List[SQLAlchemyModel], fields_set: Iterable
+    ) -> Tuple[str, str]:
+        item_name = "classical_models"
+        try:
+            template_mod = env.get_template("sqla_models_classical.txt.jinja")
+            output_clas_models = template_mod.render(
+                models=models, convert_to_snake=convert_to_snake, fields_set=fields_set
+            )
+        except Exception:
+            raise RenderFailed(item_name)
+        else:
+            return (output_clas_models, item_name)
 
     def write_to_file(self, item: Any, item_name: str) -> None:
         try:

@@ -28,7 +28,7 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 **SQLAlchemy** - SQLAlchemy 1.4+
 
 - [X] models in Declarative Mapping
-- [ ] models in Classical Mapping
+- [X] models in Classical Mapping
 
 **Peewee** Peewee 3.14+
 
