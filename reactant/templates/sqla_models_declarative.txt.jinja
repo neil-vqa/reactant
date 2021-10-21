@@ -1,4 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import backref # To be used for One To One relationships
 from sqlalchemy import Column, Integer, {% for field in fields_set %}
     {% if loop.last %}
         {% if not field == "Integer" %}{{ field }}{% endif %}
@@ -27,6 +28,11 @@ class {{model.name}}(Base):
                         #
                         # For a Many to One, add the following to this class:
                         # {{ convert_to_snake(v["value"]) }} = relationship({{v["value"]|tojson}}, backref="{{ convert_to_snake(model.name) }}s")
+                        # And rename this field to {{ field.name }}_id if necessary.
+                        # 
+                        # For a One to One, you can use the backref function for the backref parameter.
+                        # Add the following to this class:
+                        # {{ convert_to_snake(v["value"]) }} = relationship({{v["value"]|tojson}}, backref=backref("{{ convert_to_snake(model.name) }}", uselist=False))
                         # And rename this field to {{ field.name }}_id if necessary.
                         {% else %}
                         {{ v }}
