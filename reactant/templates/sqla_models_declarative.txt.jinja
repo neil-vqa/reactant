@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import backref # To be used for One To One relationships
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy import Column, Integer, {% for field in fields_set %}
     {% if loop.last %}
         {% if not field == "Integer" %}{{ field }}{% endif %}
@@ -22,18 +22,19 @@ class {{model.name}}(Base):
                 {% for k, v in option.items() %}
                     {% if k == "column_type" %}
                         {% if "relation" in v %}Integer, {{ v["relation"] }}({{ "{}.id".format(convert_to_snake(v["value"]))|tojson }})
-                        # To establish a One To Many relationship relationship, add the following line to {{v["value"]}} class:
+                        # To establish a One To Many relationship relationship with {{v["value"]}} as the parent, 
+                        # add the following line to {{v["value"]}} class:
                         # {{ convert_to_snake(model.name) }}s = relationship("{{ model.name }}", backref={{ convert_to_snake(v["value"])|tojson }}) 
-                        # And rename this field to {{ field.name }}_id if necessary.
+                        # And rename this ForeignKey field to {{ field.name }}_id if necessary.
                         #
-                        # For a Many to One, add the following to this class:
+                        # For a Many to One with {{model.name}} as the parent, add the following to {{model.name}} class:
                         # {{ convert_to_snake(v["value"]) }} = relationship({{v["value"]|tojson}}, backref="{{ convert_to_snake(model.name) }}s")
-                        # And rename this field to {{ field.name }}_id if necessary.
+                        # And rename this ForeignKey field to {{ field.name }}_id if necessary.
                         # 
-                        # For a One to One, you can use the backref function for the backref parameter.
+                        # For a One to One assuming {{v["value"]}} as a parent, you can use the backref function for the backref parameter.
                         # Add the following to this class:
                         # {{ convert_to_snake(v["value"]) }} = relationship({{v["value"]|tojson}}, backref=backref("{{ convert_to_snake(model.name) }}", uselist=False))
-                        # And rename this field to {{ field.name }}_id if necessary.
+                        # And rename this ForeignKey field to {{ field.name }}_id if necessary.
                         {% else %}
                         {{ v }}
                         {% endif %}

@@ -132,7 +132,7 @@ These behave differently for each framework. The [Get Started](#get-started) sec
 
 Currently, only the `foreign_key` parameter is available for establishing relationships. You may put the `Field` function with this parameter to any of your classes since the generated code will provide options for your intended relationship: One-to-Many, Many-to-One, One-to-One. Using `SQLAlchemyORM` for the reactant models in [Get Started](#get-started) section, the following code is generated:
 
-![sqla_rel_01](screenshots/sqla_01.png)
+![sqla_rel_01](screenshots/sqla_01n.png)
 
 **Peewee**: *reactant* models with `PeeweeORM` can use `foreign_key` parameter.
 
