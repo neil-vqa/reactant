@@ -134,6 +134,8 @@ Currently, only the `foreign_key` parameter is available for establishing relati
 
 ![sqla_rel_01](screenshots/sqla_01.png)
 
+**Peewee**: *reactant* models with `PeeweeORM` can use `foreign_key` parameter.
+
 ## The generate function
 
 The `generate` function can accept keyword arguments to control the behavior of generating code and files. Read below to learn what each supported framework accepts.
