@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Iterable, List, Tuple, Type
+from typing import Any, List, Tuple, Type
 
 from black import FileMode, format_str
 from click import secho

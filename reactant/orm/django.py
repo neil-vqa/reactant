@@ -3,7 +3,7 @@ import uuid
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, Dict, List, NamedTuple, Sequence, Tuple, Type
+from typing import Any, Dict, List, NamedTuple, Sequence
 
 from django.db.models import (
     BinaryField,
