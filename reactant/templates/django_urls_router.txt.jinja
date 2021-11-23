@@ -1,0 +1,13 @@
+from rest_framework import routers
+from .views import {% for k,_ in names.items() %}{% if loop.last %}{{ k }}Viewset {% else %}{{ k }}Viewset, {% endif %}{% endfor %}
+
+router = routers.SimpleRouter()
+
+{% for k,v in names.items() %}
+router.register("{{ v }}s", {{ k }}Viewset, basename="{{ v }}s")
+{% endfor %}
+
+urlpatterns = [
+]
+
+urlpatterns += router.urls
