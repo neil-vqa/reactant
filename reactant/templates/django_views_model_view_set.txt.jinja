@@ -1,0 +1,12 @@
+from rest_framework import viewsets
+from .models import {% for name in names %}{% if loop.last %}{{ name }}{% else %}{{ name }},{% endif %}{% endfor %}
+
+from .serializers import {% for name in names %}{% if loop.last %}{{ name }}Serializer{% else %}{{ name }}Serializer,{% endif %}{% endfor %}
+
+
+{% for name in names %}
+class {{ name }}Viewset(viewsets.ModelViewSet):
+    queryset = {{ name }}.objects.all()
+    serializer_class = {{ name }}Serializer
+
+{% endfor %}

@@ -47,23 +47,29 @@ class TestDjango:
         dj_models = Path(f"{p}/models.py")
         dj_views_class = Path(f"{p}/views_class.py")
         dj_views_func = Path(f"{p}/views_func.py")
+        dj_views_viewset = Path(f"{p}/views_modelviewset.py")
         dj_serializers = Path(f"{p}/serializers.py")
         dj_urls_class = Path(f"{p}/urls_class.py")
         dj_urls_func = Path(f"{p}/urls_func.py")
+        dj_urls_viewset = Path(f"{p}/urls_viewset.py")
 
         assert dj_models.is_file()
         assert dj_views_class.is_file()
         assert dj_views_func.is_file()
+        assert dj_views_viewset.is_file()
         assert dj_serializers.is_file()
         assert dj_urls_class.is_file()
         assert dj_urls_func.is_file()
+        assert dj_urls_viewset.is_file()
 
         dj_models.unlink()
         dj_views_class.unlink()
         dj_views_func.unlink()
+        dj_views_viewset.unlink()
         dj_serializers.unlink()
         dj_urls_class.unlink()
         dj_urls_func.unlink()
+        dj_urls_viewset.unlink()
 
 
 class TestPeewee:
