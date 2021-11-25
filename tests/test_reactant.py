@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-from reactant import DjangoORM, Field, PeeweeORM, __version__, generate, SQLAlchemyORM
+from reactant import DjangoORM, Field, PeeweeORM, SQLAlchemyORM, __version__, generate
 from reactant.orm.django import DjangoModel
 from reactant.orm.peewee import PeeweeModel
 from reactant.orm.sqla import SQLAlchemyModel
