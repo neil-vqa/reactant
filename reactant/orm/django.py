@@ -182,7 +182,7 @@ class DjangoCombustor:
                     extras_list.insert(1, {"on_delete": "models.CASCADE"})
                 else:
                     extras_list.append({f"{k}": v})
-        if value.required == False:
+        if value.required is False:
             extras_list.append({"null": True})
         if value.field_info.max_length:
             extras_list.append({"max_length": value.field_info.max_length})

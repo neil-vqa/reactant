@@ -152,7 +152,7 @@ class PeeweeCombustor:
                     extras_list.insert(0, {"relation": v})
                 else:
                     extras_list.append({f"{k}": v})
-        if value.required == False:
+        if value.required is False:
             extras_list.append({"null": True})
         if value.field_info.max_length:
             extras_list.append({"max_length": value.field_info.max_length})

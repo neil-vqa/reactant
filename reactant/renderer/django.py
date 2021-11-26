@@ -33,7 +33,10 @@ class DjangoCombustionChamber:
         return models
 
     def render_manager(
-        self, class_based: bool = True, function_based: bool = True, viewset_based: bool = True
+        self,
+        class_based: bool = True,
+        function_based: bool = True,
+        viewset_based: bool = True,
     ) -> None:
         """Invokes render_* methods then pass the rendered template strings to writing the file."""
         try:
@@ -60,15 +63,14 @@ class DjangoCombustionChamber:
                 urls_func_code, urls_func_name_str = self.render_urls_func(model_names)
                 self.write_to_file(views_func_code, views_func_name_str)
                 self.write_to_file(urls_func_code, urls_func_name_str)
-            
+
             if viewset_based:
-                views_code, viewset_name_str = self.render_views_viewset(
+                views_code, viewset_name_str = self.render_views_viewset(model_names)
+                urls_viewset_code, urls_viewset_name_str = self.render_urls_viewset(
                     model_names
                 )
-                urls_viewset_code, urls_viewset_name_str = self.render_urls_viewset(model_names)
                 self.write_to_file(views_code, viewset_name_str)
                 self.write_to_file(urls_viewset_code, urls_viewset_name_str)
-
 
         except Exception:
             raise
@@ -104,13 +106,15 @@ class DjangoCombustionChamber:
             raise RenderFailed(item_name)
         else:
             return (output_views_func, item_name)
-    
+
     def render_views_viewset(self, model_names: List[str]) -> Tuple[str, str]:
         item_name = "views_modelviewset"
         try:
             snaked_model_names = [convert_to_snake(name) for name in model_names]
             paired_names = dict(zip(model_names, snaked_model_names))
-            template_views_viewset = env.get_template("django_views_model_view_set.txt.jinja")
+            template_views_viewset = env.get_template(
+                "django_views_model_view_set.txt.jinja"
+            )
             output_views_viewset = template_views_viewset.render(names=paired_names)
         except Exception:
             raise RenderFailed(item_name)
@@ -161,7 +165,7 @@ class DjangoCombustionChamber:
             paired_names = dict(zip(model_names, snaked_model_names))
             template_urls = env.get_template("django_urls_router.txt.jinja")
             output_urls = template_urls.render(names=paired_names)
-        except Exception as e:
+        except Exception:
             raise RenderFailed(item_name)
         else:
             return (output_urls, item_name)

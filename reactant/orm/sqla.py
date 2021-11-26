@@ -22,8 +22,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 
-from reactant.utils import convert_to_snake
-
 
 class SQLAlchemyModelField(NamedTuple):
     name: str
@@ -139,7 +137,7 @@ class SQLAlchemyCombustor:
 
         if not issubclass(type(value.field_info.default), UndefinedType):
             extras_list.append({"default": value.field_info.default})
-        if value.required == False:
+        if value.required is False:
             extras_list.append({"nullable": True})
         if new_extra_options:
             for k, v in new_extra_options.items():

@@ -32,21 +32,27 @@ def classify_reactants() -> Tuple[List[Any], ...]:
     return (dj_classes, alchemy_classes, peewee_classes)
 
 
-def generate_django(dj_classes, base_directory, class_based, function_based, viewset_based) -> None:
+def generate_django(
+    dj_classes, base_directory, class_based, function_based, viewset_based
+) -> None:
     try:
         from reactant.renderer.django import DjangoCombustionChamber
 
         # DjangoCombustionChamber class contains methods for generating the files.
         secho(f"Found {len(dj_classes)} Django reactants.", fg="blue")
         dj_rxn = DjangoCombustionChamber(dj_classes)
-        dj_rxn.render_manager(class_based=class_based, function_based=function_based, viewset_based=viewset_based)
+        dj_rxn.render_manager(
+            class_based=class_based,
+            function_based=function_based,
+            viewset_based=viewset_based,
+        )
     except ImportError:
         secho(
             "Failed to import django. Please install django to generate django files.",
             fg="red",
         )
     except Exception:
-        secho(f"Sorry. Something went wrong rendering Django files.", fg="red")
+        secho("Sorry. Something went wrong rendering Django files.", fg="red")
         raise
     else:
         secho(
@@ -69,7 +75,7 @@ def generate_peewee(peewee_classes, base_directory) -> None:
             fg="red",
         )
     except Exception:
-        secho(f"Sorry. Something went wrong rendering Peewee files.", fg="red")
+        secho("Sorry. Something went wrong rendering Peewee files.", fg="red")
         raise
     else:
         secho(
@@ -92,7 +98,7 @@ def generate_sqla(alchemy_classes, base_directory) -> None:
             fg="red",
         )
     except Exception:
-        secho(f"Sorry. Something went wrong rendering SQLAlchemy files.", fg="red")
+        secho("Sorry. Something went wrong rendering SQLAlchemy files.", fg="red")
         raise
     else:
         secho(
@@ -101,7 +107,9 @@ def generate_sqla(alchemy_classes, base_directory) -> None:
         )
 
 
-def generate(class_based: bool = True, function_based: bool = True, viewset_based: bool = True) -> None:
+def generate(
+    class_based: bool = True, function_based: bool = True, viewset_based: bool = True
+) -> None:
     """
     Deliver Reactant models to appropriate "generators".
     """
@@ -110,7 +118,9 @@ def generate(class_based: bool = True, function_based: bool = True, viewset_base
     base_directory = "reactant_products"
 
     if dj_classes:
-        generate_django(dj_classes, base_directory, class_based, function_based, viewset_based)
+        generate_django(
+            dj_classes, base_directory, class_based, function_based, viewset_based
+        )
     else:
         secho("No Django reactants found.", fg="blue")
 
