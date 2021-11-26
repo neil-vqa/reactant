@@ -11,7 +11,7 @@ from reactant.renderer.sqla import SQLAlchemyCombustionChamber
 
 
 def test_version():
-    assert __version__ == "0.5.0"
+    assert __version__ == "0.6.0"
 
 
 class TestDjango:

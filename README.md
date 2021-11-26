@@ -19,9 +19,11 @@ Generate code for *models, views, and urls* based on Python type annotations. Po
 - [X] models
 - [X] views (class-based API views, filename=*views_class.py*)
 - [X] views (function-based API views, filename=*views_func.py*)
+- [X] views (modelviewset, filename=*views_modelviewset.py*)
 - [X] serializers
-- [X] urls (from class-based API views, filename=*urls_class.py*)
-- [X] urls (from function-based API views, filename=*urls_func.py*)
+- [X] urls (using class-based API views, filename=*urls_class.py*)
+- [X] urls (using function-based API views, filename=*urls_func.py*)
+- [X] urls (using viewset, filename=*urls_viewset.py*)
 
 **Flask** (Flask 2+)
 
@@ -146,7 +148,7 @@ The `generate` function can accept keyword arguments to control the behavior of 
 
 ### Django REST
 
-By default, both function-based and class-based views are generated. To switch OFF either of the two, pass `class_based=False` or `function_based=False`. 
+By default, all of function-based, class-based, and viewset-based views are generated. To switch OFF any of them, pass `class_based=False` or `function_based=False` or `viewset_based=False` 
 
 ## Development
 
@@ -157,8 +159,21 @@ The project uses Poetry to package and manage dependencies.
 ```
 
 Run tests.
+
 ```cli
 pytest
+```
+
+Do linting.
+
+```cli
+bash scripts/lint-check.sh
+```
+
+Fix formatting.
+
+```cli
+bash scripts/format.sh
 ```
 
 ## License
